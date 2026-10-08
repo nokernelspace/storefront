@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Shell",
+            "request": "launch",
+            "mainClass": "io.github.mimerme.Shell",
+            "projectName": "storefront"
+        },
+        {
+            "type": "java",
+            "name": "Run SpringShell",
+            "request": "launch",
+            "mainClass": "io.github.mimerme.SpringShell",
+            "projectName": "storefront"
+        },
+        {
+            "type": "java",
+            "name": "Run Storefront",
+            "request": "launch",
+            "mainClass": "io.github.mimerme.Storefront",
+            "projectName": "storefront"
+        }
+    ]
+}

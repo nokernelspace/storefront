@@ -1,0 +1,18 @@
+{
+  "products": {},
+  "users": [],
+  "transactions": [
+    {
+      "buyerUsername": "admin",
+      "products": [
+        {
+          "id": "la7n",
+          "name": "Apple",
+          "sellingPrice": 1.5,
+          "quantity": 1,
+          "category": "GROCERY"
+        }
+      ]
+    }
+  ]
+}

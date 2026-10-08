@@ -1,0 +1,15 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "java.project.sourcePaths": [
+            "src"
+        ],
+        "java.project.outputPath": "target/classes",
+        "java.project.referencedLibraries": [],
+        "java.compile.nullAnalysis.mode": "automatic"
+    }
+}

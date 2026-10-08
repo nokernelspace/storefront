@@ -1,0 +1,36 @@
+{
+  "products": {
+    "Apple": {
+      "id": "iYc9",
+      "name": "Apple",
+      "sellingPrice": 1.5,
+      "quantity": 0,
+      "category": "GROCERY"
+    },
+    "Strawberry": {
+      "id": "vCQW",
+      "name": "Strawberry",
+      "sellingPrice": 2.13,
+      "quantity": 0,
+      "category": "GROCERY"
+    },
+    "Banana": {
+      "id": "gxsG",
+      "name": "Banana",
+      "sellingPrice": 2.6550000000000002,
+      "quantity": 1,
+      "category": "GROCERY"
+    }
+  },
+  "users": [
+    {
+      "id": "eqHaTICxqy",
+      "username": "andros",
+      "email": "andros.cyang@gmail.com",
+      "password": "password123",
+      "superCoins": 100.0,
+      "isAdmin": false
+    }
+  ],
+  "transactions": []
+}

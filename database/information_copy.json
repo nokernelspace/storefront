@@ -1,0 +1,26 @@
+{
+  "products": {
+    "Apple": {
+      "id": "mMlO",
+      "name": "Apple",
+      "sellingPrice": 1.5,
+      "quantity": 1,
+      "category": "GROCERY"
+    },
+    "Strawberry": {
+      "id": "7ac7",
+      "name": "Strawberry",
+      "sellingPrice": 2.13,
+      "quantity": 1,
+      "category": "GROCERY"
+    },
+    "Banana": {
+      "id": "bsIf",
+      "name": "Banana",
+      "sellingPrice": 2.6550000000000002,
+      "quantity": 1,
+      "category": "GROCERY"
+    }
+  },
+  "users": []
+}

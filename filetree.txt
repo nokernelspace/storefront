@@ -1,0 +1,81 @@
+Vscodeshartfront/
+├── ._.classpath
+├── ._pom.xml
+├── .vscode
+│   ├── launch.json
+│   ├── settings.json
+│   └── tasks.json
+├── README.md
+├── bin
+│   └── module-info.class
+├── database
+│   ├── ._cache
+│   ├── ._information.json
+│   ├── cache
+│   │   ├── ._information.json
+│   │   ├── ._items.csv
+│   │   ├── information.json
+│   │   └── items.csv
+│   ├── information.json
+│   ├── information_copy.json
+│   ├── information_old.json
+│   └── items.csv
+├── filetree.txt
+├── pom.xml
+├── src
+│   └── io
+│       ├── ._github
+│       └── github
+│           └── mimerme
+│               ├── Main.java
+│               ├── Utils.java
+│               ├── core
+│               │   ├── Item.java
+│               │   ├── Product.java
+│               │   ├── ShoppingCart.java
+│               │   └── Transaction.java
+│               ├── store
+│               │   ├── ._StoreInformation.java
+│               │   ├── Category.java
+│               │   ├── StoreInformation.java
+│               │   └── StoreRecord.java
+│               └── users
+│                   └── User.java
+├── storefront.code-workspace
+└── target
+    ├── classes
+    │   ├── META-INF
+    │   │   ├── MANIFEST.MF
+    │   │   └── maven
+    │   │       └── storefront
+    │   │           └── storefront
+    │   │               ├── pom.properties
+    │   │               └── pom.xml
+    │   └── io
+    │       └── github
+    │           └── mimerme
+    │               ├── Main.class
+    │               ├── Utils.class
+    │               ├── core
+    │               │   ├── Item.class
+    │               │   ├── Product.class
+    │               │   ├── ShoppingCart.class
+    │               │   └── Transaction.class
+    │               ├── store
+    │               │   ├── Category.class
+    │               │   ├── StoreInformation.class
+    │               │   └── StoreRecord.class
+    │               └── users
+    │                   └── User.class
+    ├── generated-sources
+    │   └── annotations
+    ├── maven-archiver
+    │   └── pom.properties
+    ├── maven-status
+    │   └── maven-compiler-plugin
+    │       └── compile
+    │           └── default-compile
+    │               ├── createdFiles.lst
+    │               └── inputFiles.lst
+    ├── storefront-0.0.1-SNAPSHOT.jar
+    └── test-classes
