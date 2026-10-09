@@ -1,8 +1,11 @@
 package io.github.mimerme;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+
+
 
 
 // @Configuration
@@ -75,5 +78,10 @@ public class Storefront {
     @PostMapping("/")
     public String world(){
         return "index";
+    }
+
+    @Service 
+    public Object test(){
+
     }
 }

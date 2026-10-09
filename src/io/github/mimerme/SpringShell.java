@@ -18,6 +18,10 @@ import io.github.mimerme.store.Category;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
 public class SpringShell {
 	public static List<Product> searchProduct(String search) {
 		List<Product> productMatches = StoreInformation.INSTANCE.data.products
@@ -456,4 +460,8 @@ public class SpringShell {
 		}
 	}
 
+	@Bean
+	public static Object hello() {
+		return null;
+	}
 }
