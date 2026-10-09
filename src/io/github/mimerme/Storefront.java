@@ -1,7 +1,6 @@
 package io.github.mimerme;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -42,28 +41,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 //         @Override
 //         public void handle(HttpExchange exchange) throws IOException {
-//             if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-//                 URI requestUri = exchange.getRequestURI();
-//                 String query = requestUri.getQuery();
-
-//                 String name = "World";
-//                 if (query != null && query.startsWith("name=")) {
-//                     name = query.substring(5);
-//                 }
-
-//                 // Greeting greeting = new Greeting(counter.incrementAndGet(),
-//                 // String.format(TEMPLATE, name));
-//                 //String responseJson = greeting.toJson();
-
-//                 exchange.getResponseHeaders().set("Content-Type", "application/json");
-//                 exchange.sendResponseHeaders(200, "Hello World".getBytes().length);
-
-//                 // try (OutputStream os = exchange.getResponseBody()) {
-//                 //     os.write(responseJson.getBytes());
-//                 // }
-//             } else {
-//                 exchange.sendResponseHeaders(405, -1); // 405 Method Not Allowed
-//             }
 //         }
 //     }
 // }
@@ -78,10 +55,5 @@ public class Storefront {
     @PostMapping("/")
     public String world(){
         return "index";
-    }
-
-    @Service 
-    public Object test(){
-
     }
 }

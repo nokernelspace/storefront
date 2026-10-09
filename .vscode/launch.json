@@ -21,6 +21,13 @@
             "request": "launch",
             "mainClass": "io.github.mimerme.Storefront",
             "projectName": "storefront"
+        },
+        {
+            "type": "java",
+            "name": "Run Vanilla",
+            "request": "launch",
+            "mainClass": "io.github.mimerme.Vanilla",
+            "projectName": "storefront"
         }
     ]
 }
