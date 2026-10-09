@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Utils {
+public class YarosUtils {
     public static void touch(String path) {
         Path filePath = Paths.get(path);
         // Or relative path: Paths.get("data/output/myfile.txt");

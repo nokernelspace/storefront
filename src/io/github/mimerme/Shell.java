@@ -1,23 +1,26 @@
 package io.github.mimerme;
 
-import io.github.mimerme.core.Item;
-import io.github.mimerme.core.Product;
-import io.github.mimerme.core.Transaction;
-import io.github.mimerme.store.StoreInformation;
-import io.github.mimerme.users.User;
-
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import io.github.mimerme.store.Category;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import io.github.mimerme.core.Item;
+import io.github.mimerme.core.Product;
+import io.github.mimerme.core.Transaction;
+import io.github.mimerme.store.Category;
+import io.github.mimerme.store.StoreInformation;
+import io.github.mimerme.users.User;
+
+@Configuration
 public class Shell {
 	public static List<Product> searchProduct(String search) {
 		List<Product> productMatches = StoreInformation.INSTANCE.data.products
@@ -72,13 +75,16 @@ public class Shell {
 	}
 
  	public static void main(String[] args) {
+		SpringApplication.run(Shell.class);
+	}
+
+	@Bean
+	public static Object main() {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			System.out.println("Saving to filesystem...");
 			StoreInformation.INSTANCE.store();
 		}));
-
 		User admin = new User("admin", "", "password123", Double.MAX_VALUE, true);
-
 		Scanner scanner = new Scanner(System.in);
 
 		System.out.println("Initializing Products...");
@@ -133,7 +139,7 @@ public class Shell {
 					//					System.out.printf("%-15s | %-15s | $%-9d%n\n", user.id, user.username, user.email);
 				}
 			} else if (splits[0].equals("pwd") || splits[0].equals("cwd")) {
-				System.out.println(Utils.cwd());
+				System.out.println(YarosUtils.cwd());
 			} else if (splits[0].equals("login")) {
 				if (splits.length < 2 + 1) {
 					System.out.println("USAGE: login <USERNAME/EMAIL> <PASSWORD>");
@@ -454,6 +460,6 @@ public class Shell {
 
 			// Admincommands
 		}
-	}
 
+	}
 }

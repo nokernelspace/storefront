@@ -10,20 +10,6 @@
         },
         {
             "type": "java",
-            "name": "Run SpringShell",
-            "request": "launch",
-            "mainClass": "io.github.mimerme.SpringShell",
-            "projectName": "storefront"
-        },
-        {
-            "type": "java",
-            "name": "Run Storefront",
-            "request": "launch",
-            "mainClass": "io.github.mimerme.Storefront",
-            "projectName": "storefront"
-        },
-        {
-            "type": "java",
             "name": "Run Vanilla",
             "request": "launch",
             "mainClass": "io.github.mimerme.Vanilla",

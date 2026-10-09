@@ -14,9 +14,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 
-
-
-
+// This driver hosts a web server using Java's original Sun HttpServer implementation 
 @Configuration
 public class Vanilla {
     public static void main(String[] args) {
