@@ -1,10 +1,8 @@
-package io.github.mimerme.core;
+package io.github.mimerme.storefront;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
-import io.github.mimerme.store.StoreInformation;
+import io.github.mimerme.data.StoreInformation;
 
 
 public class ShoppingCart {

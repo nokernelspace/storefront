@@ -1,11 +1,10 @@
-package io.github.mimerme.store;
+package io.github.mimerme.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-import io.github.mimerme.core.Product;
-import io.github.mimerme.core.Transaction;
+import io.github.mimerme.storefront.Product;
+import io.github.mimerme.storefront.Transaction;
 import io.github.mimerme.users.User;
 
 /// Just a wrapper for GSON

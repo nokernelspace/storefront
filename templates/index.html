@@ -1,0 +1,1600 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumen Store — Digital goods for independent creators</title>
+<meta name="description" content="Lumen Store: an original demo storefront theme. Presets, templates, and ebooks for independent creators.">
+<style>
+/* ============ LUMEN STORE — original theme, written from scratch ============ */
+:root{
+  --paper:#FAF6EE;
+  --paper-2:#F3ECDD;
+  --card:#FFFDF8;
+  --ink:#242019;
+  --ink-soft:#5D564A;
+  --muted:#8D8478;
+  --line:#E8DECC;
+  --accent:#BC6742;
+  --accent-deep:#9E5230;
+  --accent-soft:#F7E7D8;
+  --ok:#5C7A4E;
+  --radius:14px;
+  --shadow:0 10px 30px rgba(60,45,30,.10);
+  --serif:Georgia,'Times New Roman','Nimbus Roman',serif;
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+svg{display:block;max-width:100%}
+.art img,.cat-card img,.g-main img,.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:15px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+h1,h2,h3,.serif{font-family:var(--serif);font-weight:600;letter-spacing:.01em}
+.announce{background:var(--ink);color:#F7F1E3;text-align:center;font-size:13px;letter-spacing:.06em;padding:9px 14px;text-transform:uppercase}
+.announce strong{color:#EFC9A8;font-weight:700}
+.site-header{position:sticky;top:0;z-index:60;background:rgba(250,246,238,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px}
+.logo{font-family:var(--serif);font-size:24px;font-weight:700;letter-spacing:.02em}
+.logo .dot{color:var(--accent)}
+.main-nav{display:flex;gap:26px}
+.main-nav a{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);padding:6px 2px;border-bottom:2px solid transparent}
+.main-nav a:hover,.main-nav a.active{color:var(--ink);border-bottom-color:var(--accent)}
+.header-icons{display:flex;align-items:center;gap:4px}
+.icon-btn{position:relative;background:none;border:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--ink)}
+.icon-btn:hover{background:var(--accent-soft)}
+.icon-btn svg{width:21px;height:21px}
+.badge{position:absolute;top:2px;right:0;min-width:18px;height:18px;padding:0 5px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;border-radius:9px;display:grid;place-items:center;line-height:1}
+.badge.hidden{display:none}
+.hamburger{display:none;background:none;border:none;width:40px;height:40px;border-radius:10px}
+.hamburger svg{width:22px;height:22px}
+.search-panel{position:absolute;top:100%;left:0;right:0;background:var(--card);border-bottom:1px solid var(--line);box-shadow:var(--shadow);display:none}
+.search-panel.open{display:block}
+.search-inner{max-width:720px;margin:0 auto;padding:18px 22px 22px}
+.search-inner input{font-size:16px;padding:13px 16px}
+.search-hint{font-size:12px;color:var(--muted);margin-top:8px;letter-spacing:.04em}
+.search-results{margin-top:6px;max-height:320px;overflow:auto}
+.search-row{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid var(--line);cursor:pointer}
+.search-row:hover{background:var(--paper)}
+.search-row .thumb{width:46px;height:56px;border-radius:8px;overflow:hidden;flex:none}
+.search-row .thumb svg{width:100%;height:100%}
+.search-row .nm{font-weight:600;font-size:14px}
+.search-row .cat{font-size:12px;color:var(--muted)}
+.search-row .pr{margin-left:auto;font-weight:700;font-size:14px;white-space:nowrap}
+.mobile-nav{position:fixed;inset:0;z-index:90;display:none}
+.mobile-nav.open{display:block}
+.mobile-nav .scrim{position:absolute;inset:0;background:rgba(36,32,25,.45)}
+.mobile-nav .panel{position:absolute;left:0;top:0;bottom:0;width:280px;background:var(--card);padding:26px 24px;box-shadow:var(--shadow)}
+.mobile-nav a.mlink{display:block;font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:14px 0;border-bottom:1px solid var(--line);color:var(--ink-soft)}
+.mobile-nav .close-x{position:absolute;top:14px;right:14px}
+.view{display:none}
+.view.active{display:block}
+.hero{padding:72px 0 54px;text-align:center}
+.hero .kicker{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent-deep);font-weight:700;margin-bottom:16px}
+.hero h1{font-size:clamp(38px,6vw,62px);line-height:1.08;margin-bottom:18px}
+.hero h1 em{font-style:italic;color:var(--accent-deep)}
+.hero p{max-width:560px;margin:0 auto 30px;color:var(--ink-soft);font-size:17px}
+.btn{display:inline-block;border:none;border-radius:12px;padding:14px 30px;font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:transform .12s ease,box-shadow .12s ease,background .12s ease}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(188,103,66,.35)}
+.btn-primary:hover{background:var(--accent-deep);transform:translateY(-1px)}
+.btn-dark{background:var(--ink);color:#F7F1E3}
+.btn-dark:hover{background:#3A342A;transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent-deep)}
+.btn-block{width:100%;text-align:center}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 34px}
+.tab{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:10px 22px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.tab:hover{border-color:var(--accent);color:var(--accent-deep)}
+.tab.active{background:var(--ink);border-color:var(--ink);color:#F7F1E3}
+.section-title{text-align:center;margin:8px 0 6px;font-size:30px}
+.section-sub{text-align:center;color:var(--ink-soft);margin-bottom:30px}
+.grid-head{display:flex;align-items:baseline;justify-content:space-between;margin:6px 0 18px;gap:12px;flex-wrap:wrap}
+.grid-count{font-size:13px;color:var(--muted);letter-spacing:.05em}
+.clear-filter{background:none;border:none;color:var(--accent-deep);font-weight:700;font-size:13px;text-decoration:underline}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:34px 28px;margin-bottom:70px}
+.card{cursor:pointer;position:relative}
+.card .art{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/5;background:var(--paper-2);transition:transform .18s ease,box-shadow .18s ease}
+.card:hover .art{transform:translateY(-4px);box-shadow:var(--shadow)}
+.card .art svg{width:100%;height:100%}
+.card .info{padding:14px 4px 0}
+.card .cat{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.card .title{font-family:var(--serif);font-size:19px;margin:5px 0 6px;line-height:1.3}
+.card .price{font-weight:700;font-size:16px}
+.card .price .was{color:var(--muted);text-decoration:line-through;font-weight:400;margin-right:8px;font-size:14px}
+.card .price .sale{color:var(--accent-deep)}
+.pill{position:absolute;top:12px;left:12px;background:var(--accent);color:#fff;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:999px}
+.pill.soldout{background:var(--ink-soft)}
+.card .wish-mini{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,253,248,.92);display:grid;place-items:center;color:var(--ink)}
+.card .wish-mini svg{width:17px;height:17px}
+.card .wish-mini.on{color:var(--accent-deep)}
+.empty-note{text-align:center;color:var(--muted);padding:40px 0;grid-column:1/-1}
+.cat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:80px}
+.cat-card{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:16/10;cursor:pointer;border:1px solid var(--line)}
+.cat-card svg{width:100%;height:100%}
+.cat-card .label{position:absolute;inset:auto 0 0 0;padding:34px 20px 18px;background:linear-gradient(transparent,rgba(28,24,18,.72));color:#FFF9EE}
+.cat-card .label h3{font-size:22px}
+.cat-card .label span{font-size:13px;letter-spacing:.06em;opacity:.85}
+.about{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:70px 0}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}
+.about h2{font-size:32px;margin-bottom:16px}
+.about p{color:var(--ink-soft);margin-bottom:14px}
+.about ul{list-style:none;margin-top:18px}
+.about li{padding:10px 0 10px 30px;position:relative;color:var(--ink-soft);border-bottom:1px dashed var(--line)}
+.about li::before{content:"";position:absolute;left:4px;top:17px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+footer{background:var(--ink);color:#EDE4D2;padding:56px 0 28px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px;margin-bottom:40px}
+.foot-brand .logo{color:#F7F1E3}
+.foot-brand p{color:#B9AE99;font-size:14px;margin-top:12px;max-width:300px}
+.foot-col h4{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#B9AE99;margin-bottom:16px;font-family:var(--sans)}
+.foot-col a{display:block;padding:6px 0;color:#EDE4D2;font-size:14px;cursor:pointer}
+.foot-col a:hover{color:#EFC9A8}
+.socials{display:flex;gap:10px;margin-top:18px}
+.socials a{width:38px;height:38px;border:1px solid #4A4438;border-radius:50%;display:grid;place-items:center;color:#EDE4D2}
+.socials a:hover{border-color:var(--accent);color:#EFC9A8}
+.socials svg{width:17px;height:17px}
+.foot-base{border-top:1px solid #4A4438;padding-top:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:#B9AE99}
+.crumbs{padding:26px 0 6px;font-size:13px;color:var(--muted)}
+.crumbs button{background:none;border:none;color:var(--accent-deep);font-weight:700;font-size:13px}
+.pd-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:54px;margin-bottom:60px}
+.gallery{position:sticky;top:96px;align-self:start}
+.g-main{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/5;background:var(--paper-2)}
+.g-main svg{width:100%;height:100%}
+.g-arrow{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,253,248,.92);font-size:18px;color:var(--ink);display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.g-arrow.prev{left:12px}
+.g-arrow.next{right:12px}
+.g-dots{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.g-dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line);padding:0}
+.g-dots button.on{background:var(--accent)}
+.pd-info .cat{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-deep);font-weight:700}
+.pd-info h1{font-size:clamp(30px,4vw,42px);line-height:1.12;margin:10px 0 12px}
+.stars{color:var(--accent-deep);font-size:15px;letter-spacing:.08em}
+.stars .n{color:var(--muted);font-size:13px;margin-left:8px;letter-spacing:0}
+.price-block{display:flex;align-items:center;gap:14px;margin:18px 0 6px;flex-wrap:wrap}
+.price-block .now{font-size:32px;font-weight:800}
+.price-block .was{font-size:19px;color:var(--muted);text-decoration:line-through}
+.sale-pill{background:var(--accent-soft);color:var(--accent-deep);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:999px;border:1px solid #EBCBAE}
+.pd-desc{color:var(--ink-soft);margin:14px 0 24px}
+.pd-actions{display:grid;gap:12px;margin-bottom:14px}
+.pd-actions .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wish-link{background:none;border:none;color:var(--ink-soft);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:6px 0}
+.wish-link svg{width:18px;height:18px}
+.wish-link.on{color:var(--accent-deep)}
+.share-row{display:flex;align-items:center;gap:10px;margin:18px 0;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.share-row .lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.share-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:600}
+.share-btn:hover{border-color:var(--accent);color:var(--accent-deep)}
+.stock-note{font-size:14px;margin:6px 0 14px}
+.stock-note.out{color:var(--accent-deep);font-weight:700}
+.stock-note.in{color:var(--ok)}
+details.acc{border-top:1px solid var(--line)}
+details.acc:last-of-type{border-bottom:1px solid var(--line)}
+details.acc summary{cursor:pointer;padding:15px 4px;font-weight:700;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary .pm{color:var(--accent-deep);font-size:18px}
+details.acc .body{padding:0 4px 18px;color:var(--ink-soft);font-size:14px}
+.reviews{margin:10px 0 70px}
+.reviews h2{font-size:28px;margin-bottom:6px}
+.rev{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);padding:20px 22px;margin:14px 0}
+.rev .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px;flex-wrap:wrap}
+.rev .who{font-weight:700}
+.rev .date{font-size:12px;color:var(--muted)}
+.rev p{color:var(--ink-soft);font-size:15px}
+.rev-form{border:1px dashed var(--line);border-radius:var(--radius);padding:24px;margin-top:22px;background:var(--card)}
+.rev-form h3{font-size:21px;margin-bottom:4px}
+.rev-form .sub{font-size:14px;color:var(--muted);margin-bottom:16px}
+.rev-form .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.rev-form textarea{min-height:110px;resize:vertical}
+.related{margin-bottom:80px}
+.related h2{font-size:26px;margin-bottom:20px}
+.rail{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.drawer-scrim{position:fixed;inset:0;background:rgba(36,32,25,.5);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s ease}
+.drawer-scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--card);z-index:101;transform:translateX(105%);transition:transform .28s ease;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(0,0,0,.15)}
+.drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--line)}
+.drawer-head h3{font-size:22px}
+.x-btn{background:none;border:none;font-size:22px;color:var(--ink-soft);width:38px;height:38px;border-radius:50%}
+.x-btn:hover{background:var(--paper-2)}
+.drawer-body{flex:1;overflow:auto;padding:18px 22px}
+.drawer-empty{text-align:center;color:var(--muted);padding:50px 10px}
+.drawer-empty .big{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:8px}
+.line-item{display:grid;grid-template-columns:64px 1fr auto;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.line-item .thumb{width:64px;height:78px;border-radius:10px;overflow:hidden}
+.line-item .thumb svg{width:100%;height:100%}
+.line-item .nm{font-weight:700;font-size:14px;line-height:1.35;cursor:pointer}
+.line-item .nm:hover{color:var(--accent-deep)}
+.line-item .unit{font-size:12px;color:var(--muted)}
+.qty{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin-top:8px}
+.qty button{background:none;border:none;font-size:16px;width:24px;height:24px;color:var(--ink)}
+.qty .qv{font-size:14px;font-weight:700;min-width:16px;text-align:center}
+.rm{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;margin-top:8px;padding:0}
+.rm:hover{color:var(--accent-deep)}
+.line-right{text-align:right}
+.line-right .lp{font-weight:800}
+.drawer-foot{border-top:1px solid var(--line);padding:18px 22px 22px;background:var(--paper)}
+.trow{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:var(--ink-soft)}
+.trow.disc{color:var(--ok)}
+.trow.total{font-size:18px;font-weight:800;color:var(--ink);padding-top:10px;margin-top:6px;border-top:1px dashed var(--line)}
+.xsell{margin:16px 0 4px;border:1px solid var(--line);border-radius:var(--radius);padding:16px;background:var(--accent-soft)}
+.xsell h4{font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;color:var(--accent-deep)}
+.xsell-item{display:flex;gap:12px;align-items:center;padding:8px 0}
+.xsell-item .thumb{width:44px;height:54px;border-radius:8px;overflow:hidden;flex:none}
+.xsell-item .thumb svg{width:100%;height:100%}
+.xsell-item .nm{font-size:13px;font-weight:600}
+.xsell-item .pr{font-size:13px;color:var(--ink-soft)}
+.xsell-item button{margin-left:auto;flex:none;border:none;background:var(--ink);color:#F7F1E3;font-size:12px;font-weight:700;padding:8px 14px;border-radius:999px}
+.co-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;padding:34px 0 70px;align-items:start}
+.co-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin-bottom:22px}
+.co-card h3{font-size:21px;margin-bottom:4px}
+.co-card .sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+.pay-opt{border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.pay-opt.sel{border-color:var(--accent);background:#FFFDF8}
+.pay-opt input{width:auto;margin-top:4px;accent-color:#9E5230}
+.pay-opt .pt{font-weight:700}
+.pay-opt .pd{font-size:13px;color:var(--muted)}
+.demo-tag{font-size:10px;font-weight:800;letter-spacing:.1em;background:var(--ink);color:#F7F1E3;border-radius:6px;padding:3px 8px;text-transform:uppercase;vertical-align:middle}
+.summary{position:sticky;top:96px}
+.sum-item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.sum-item .thumb{width:50px;height:62px;border-radius:8px;overflow:hidden;flex:none;position:relative}
+.sum-item .thumb svg{width:100%;height:100%}
+.sum-item .q{position:absolute;top:-8px;right:-8px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;width:22px;height:22px;border-radius:50%;display:grid;place-items:center}
+.sum-item .nm{font-size:14px;font-weight:600}
+.sum-item .pr{margin-left:auto;font-size:14px;font-weight:700;white-space:nowrap}
+.coupon-row{display:flex;gap:10px;margin:14px 0}
+.coupon-row input{text-transform:uppercase}
+.coupon-msg{font-size:13px;margin:-6px 0 10px;min-height:18px}
+.coupon-msg.ok{color:var(--ok)}
+.coupon-msg.err{color:var(--accent-deep)}
+.confirm{max-width:640px;margin:0 auto;padding:70px 22px 90px;text-align:center}
+.confirm .seal{width:84px;height:84px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;margin:0 auto 24px;color:var(--accent-deep)}
+.confirm .seal svg{width:38px;height:38px}
+.confirm h1{font-size:38px;margin-bottom:12px}
+.confirm .ordno{display:inline-block;background:var(--paper-2);border:1px dashed var(--line);border-radius:10px;padding:10px 22px;font-weight:800;letter-spacing:.1em;margin:14px 0 20px}
+.confirm p{color:var(--ink-soft);margin-bottom:10px}
+.faq{max-width:760px;margin:0 auto;padding:44px 22px 80px}
+.faq h1{font-size:38px;text-align:center;margin-bottom:8px}
+.faq .sub{text-align:center;color:var(--ink-soft);margin-bottom:34px}
+.sticky-atc{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--card);border-top:1px solid var(--line);padding:12px 16px;display:none;align-items:center;gap:12px;box-shadow:0 -8px 24px rgba(0,0,0,.08)}
+.sticky-atc .t{flex:1;min-width:0}
+.sticky-atc .t .nm{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sticky-atc .t .pr{font-size:14px;color:var(--ink-soft)}
+.sticky-atc .btn{padding:12px 22px}
+.toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,80px);background:var(--ink);color:#F7F1E3;padding:13px 24px;border-radius:999px;font-size:14px;font-weight:600;z-index:200;opacity:0;transition:all .3s ease;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{transform:translate(-50%,0);opacity:1}
+/* ---------- accounts (demo auth) ---------- */
+.acct-wrap{position:relative}
+.acct-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);min-width:230px;display:none;overflow:hidden;z-index:80}
+.acct-menu.open{display:block}
+.acct-menu .am-head{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:700;font-size:15px}
+.acct-menu .am-head small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:2px}
+.acct-menu button{display:block;width:100%;text-align:left;background:none;border:none;padding:12px 18px;font-size:14px;font-weight:600;color:var(--ink)}
+.acct-menu button:hover{background:var(--paper)}
+.avatar-btn{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;font-size:15px;display:grid;place-items:center}
+.auth{max-width:460px;margin:0 auto;padding:56px 22px 90px}
+.auth h1{font-size:34px;text-align:center;margin-bottom:6px}
+.auth .sub{text-align:center;color:var(--ink-soft);margin-bottom:26px}
+.form-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+.form-msg{font-size:13px;margin:10px 0 0;min-height:18px}
+.form-msg.err{color:var(--accent-deep)}
+.form-msg.ok{color:var(--ok)}
+.auth-switch{text-align:center;margin-top:18px;font-size:14px;color:var(--ink-soft)}
+.auth-switch button{background:none;border:none;color:var(--accent-deep);font-weight:700;text-decoration:underline;font-size:14px;padding:0}
+.dash{max-width:880px;margin:0 auto;padding:44px 22px 90px}
+.dash h1{font-size:34px;margin-bottom:2px}
+.dash .who{color:var(--ink-soft);margin-bottom:22px}
+.dash-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+.order{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);margin-bottom:12px;overflow:hidden}
+.order-head{width:100%;background:none;border:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;text-align:left;cursor:pointer}
+.order-head:hover{background:var(--paper)}
+.order-head .no{font-weight:800;letter-spacing:.06em}
+.order-head .meta{font-size:13px;color:var(--muted)}
+.order-head .tot{font-weight:800;font-size:17px;white-space:nowrap}
+.order-body{display:none;border-top:1px solid var(--line);padding:16px 20px}
+.order.open .order-body{display:block}
+.addr-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.addr-card{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);padding:18px}
+.addr-card .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px}
+.addr-card .who{font-weight:700;margin-bottom:4px}
+.addr-card .lines{font-size:14px;color:var(--ink-soft);line-height:1.6}
+.addr-actions{margin-top:12px}
+.link-btn{background:none;border:none;color:var(--accent-deep);font-weight:700;font-size:13px;text-decoration:underline;padding:0;margin-right:14px}
+.empty-state{text-align:center;color:var(--muted);padding:48px 12px}
+.empty-state .big{font-family:var(--serif);font-size:24px;color:var(--ink);margin-bottom:8px}
+.claim-box{max-width:480px;margin:28px auto 0;background:var(--accent-soft);border:1px solid #EBCBAE;border-radius:var(--radius);padding:24px}
+.claim-box h3{font-size:20px;margin-bottom:6px}
+.claim-box p{font-size:14px;color:var(--ink-soft);margin-bottom:14px}
+@media (max-width:640px){
+  .addr-grid{grid-template-columns:1fr}
+  .auth{padding-top:40px}
+  .form-card{padding:22px}
+}
+@media (max-width:900px){
+  .grid{grid-template-columns:repeat(2,1fr);gap:26px 18px}
+  .rail{grid-template-columns:repeat(2,1fr)}
+  .cat-cards{grid-template-columns:1fr}
+  .pd-grid{grid-template-columns:1fr;gap:30px}
+  .gallery{position:static}
+  .co-grid{grid-template-columns:1fr}
+  .summary{position:static;order:-1}
+  .about-grid{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  .main-nav{display:none}
+  .hamburger{display:block}
+  .grid{grid-template-columns:1fr;gap:30px}
+  .hero{padding:52px 0 40px}
+  .rev-form .frow,.frow2,.pd-actions .row2{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+  body.on-product .sticky-atc{display:flex}
+  .drawer{width:100%}
+}
+/* portrait / mobile: square center-cropped product imagery */
+@media (max-width:640px),(orientation:portrait) and (max-width:900px){
+  .card .art,.cat-card,.g-main{aspect-ratio:1/1}
+  .card .art img,.cat-card img,.g-main img{object-position:center center}
+}
+</style>
+</head>
+<body>
+<div class="announce">First visit? Take <strong>10% off</strong> your order with code <strong>WELCOME10</strong></div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <a class="logo" href="#" data-nav="home">Lumen<span class="dot">.</span></a>
+    <nav class="main-nav">
+      <a href="#" data-nav="home">Shop</a>
+      <a href="#" data-nav="faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-icons">
+      <button class="icon-btn" id="searchBtn" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </button>
+      <button class="icon-btn" id="wishBtn" aria-label="Wishlist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C7 16.5 3.5 13.3 3.5 9.6 3.5 7 5.5 5 8 5c1.6 0 3.1.8 4 2.1C12.9 5.8 14.4 5 16 5c2.5 0 4.5 2 4.5 4.6 0 3.7-3.5 6.9-8.5 10.9z"/></svg>
+        <span class="badge hidden" id="wishCount">0</span>
+      </button>
+      <button class="icon-btn" id="cartBtn" aria-label="Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h15l-1.6 7.2a1.5 1.5 0 0 1-1.5 1.2H8.7a1.5 1.5 0 0 1-1.5-1.2L5 4.8A1 1 0 0 0 4 4H2"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+        <span class="badge hidden" id="cartCount">0</span>
+      </button>
+      <div class="acct-wrap" id="acctWrap">
+        <button class="icon-btn" id="acctBtn" aria-label="Log in"></button>
+        <div class="acct-menu" id="acctMenu"></div>
+      </div>
+    </div>
+  </div>
+  <div class="search-panel" id="searchPanel">
+    <div class="search-inner">
+      <input type="text" id="searchInput" placeholder="Search presets, templates, ebooks…" autocomplete="off">
+      <div class="search-hint">Press Enter to filter the shop grid</div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+  <div class="scrim" data-close-mnav></div>
+  <div class="panel">
+    <button class="x-btn close-x" data-close-mnav aria-label="Close menu">✕</button>
+    <a class="mlink" href="#" data-nav="home">Shop</a>
+    <a class="mlink" href="#" data-nav="faq">FAQ</a>
+    <a class="mlink" href="#contact" data-close-mnav>Contact</a>
+    <div id="mnavAcct"></div>
+  </div>
+</div>
+
+<!-- ================= HOME ================= -->
+<main class="view active" id="view-home">
+  <section class="hero wrap">
+    <div class="kicker">A demo storefront theme</div>
+    <h1>Digital goods for <em>independent</em> creators</h1>
+    <p>Hand-made presets, templates, and ebooks — crafted slowly, priced fairly, delivered instantly. Browse the shelves below.</p>
+    <button class="btn btn-primary" id="heroCta">Browse the shop</button>
+  </section>
+
+  <section class="wrap">
+    <h2 class="section-title">The shelves</h2>
+    <p class="section-sub">Twelve original downloads across three collections.</p>
+    <div class="tabs" id="tabs"></div>
+    <div class="grid-head">
+      <span class="grid-count" id="gridCount"></span>
+      <button class="clear-filter hidden" id="clearFilter">Clear search</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="wrap">
+    <h2 class="section-title">Collections</h2>
+    <p class="section-sub">Three shelves, one for every kind of maker.</p>
+    <div class="cat-cards" id="catCards"></div>
+  </section>
+
+  <section class="about">
+    <div class="wrap about-grid">
+      <div>
+        <h2>Why Lumen exists</h2>
+        <p>Lumen is a fictional demo store, built to show what a warm, unhurried storefront can feel like. Every product here is imaginary — the presets, templates, and ebooks are placeholders for your own work.</p>
+        <p>The theme is a single self-contained file: no trackers, no external fonts, no image servers. Just paper, ink, and a little terracotta.</p>
+      </div>
+      <div>
+        <ul>
+          <li>Instant delivery — downloads land in your inbox seconds after checkout.</li>
+          <li>Honest pricing — no subscriptions, no upsell mazes, no dark patterns.</li>
+          <li>Made to be remixed — swap the palette, the copy, and the catalog; the layout holds.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ================= PRODUCT ================= -->
+<main class="view" id="view-product">
+  <div class="wrap">
+    <div class="crumbs"><button id="backBtn">← Back to shop</button> <span id="crumbCat"></span></div>
+    <div class="pd-grid">
+      <div class="gallery">
+        <div class="g-main" id="gMain"></div>
+        <div class="g-dots" id="gDots"></div>
+      </div>
+      <div class="pd-info" id="pdInfo"></div>
+    </div>
+    <div class="reviews" id="reviews"></div>
+    <div class="related">
+      <h2>You may also like</h2>
+      <div class="rail" id="rail"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= CHECKOUT ================= -->
+<main class="view" id="view-checkout">
+  <div class="wrap">
+    <div class="crumbs"><button id="backBtn2">← Back to shop</button></div>
+    <h1 style="font-size:34px;margin-bottom:4px">Checkout</h1>
+    <p style="color:var(--ink-soft);margin-bottom:10px">This is a <span class="demo-tag">demo</span> — no real payment is processed.</p>
+    <div class="co-grid">
+      <div>
+        <div class="co-card">
+          <h3>Contact</h3><div class="sub">Where should we send your downloads?</div>
+          <div class="field"><label for="fEmail">Email</label><input id="fEmail" type="email" placeholder="you@example.com"></div>
+        </div>
+        <div class="co-card">
+          <h3>Billing address</h3><div class="sub">Digital delivery — used for your receipt only.</div>
+          <div class="field" id="addrPickerWrap" style="display:none"><label for="addrPicker">Saved addresses</label><select id="addrPicker"></select></div>
+          <div class="frow2">
+            <div class="field"><label for="fFirst">First name</label><input id="fFirst" placeholder="Ada"></div>
+            <div class="field"><label for="fLast">Last name</label><input id="fLast" placeholder="Lovelace"></div>
+          </div>
+          <div class="field"><label for="fCountry">Country</label>
+            <select id="fCountry"><option>United States</option><option>Canada</option><option>United Kingdom</option><option>Germany</option><option>Australia</option><option>Japan</option><option>Other</option></select>
+          </div>
+          <div class="frow2">
+            <div class="field"><label for="fState">State / Province</label><input id="fState" placeholder="CA"></div>
+            <div class="field"><label for="fZip">ZIP / Postal code</label><input id="fZip" placeholder="90210"></div>
+          </div>
+        </div>
+        <div class="co-card">
+          <h3>Payment <span class="demo-tag">demo</span></h3><div class="sub">Mock fields only. Nothing is charged.</div>
+          <div class="pay-opt sel" data-pay="card">
+            <input type="radio" name="pay" checked>
+            <div><div class="pt">Card</div><div class="pd">Visa, Mastercard, Amex — pretend numbers welcome.</div></div>
+          </div>
+          <div id="cardFields">
+            <div class="field"><label for="fCard">Card number</label><input id="fCard" inputmode="numeric" placeholder="4242 4242 4242 4242"></div>
+            <div class="frow2">
+              <div class="field"><label for="fExp">Expiry</label><input id="fExp" placeholder="12 / 28"></div>
+              <div class="field"><label for="fCvc">CVC</label><input id="fCvc" inputmode="numeric" placeholder="123"></div>
+            </div>
+          </div>
+          <div class="pay-opt" data-pay="paypal">
+            <input type="radio" name="pay">
+            <div><div class="pt">PayPal</div><div class="pd">A pretend PayPal button appears here in the demo.</div></div>
+          </div>
+        </div>
+        <button class="btn btn-dark btn-block" id="placeOrder" style="padding:17px">Place order</button>
+      </div>
+      <div class="co-card summary">
+        <h3>Order summary</h3><div class="sub">Digital items — delivered by email.</div>
+        <div id="sumItems"></div>
+        <div class="coupon-row">
+          <input id="couponInput" placeholder="Coupon code" maxlength="16">
+          <button class="btn btn-ghost" id="couponApply" style="padding:11px 20px;white-space:nowrap">Apply</button>
+        </div>
+        <div class="coupon-msg" id="couponMsg"></div>
+        <div id="sumTotals"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= CONFIRMATION ================= -->
+<main class="view" id="view-confirm">
+  <div class="confirm">
+    <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
+    <h1>Thank you — order placed.</h1>
+    <div class="ordno" id="ordNo">LS-000000</div>
+    <p id="confirmMsg">Your downloads are on their way.</p>
+    <p style="font-size:13px">Demo receipt — no real products were sold and no payment was taken.</p>
+    <div id="claimBox" class="claim-box" style="display:none">
+      <h3>Keep this order</h3>
+      <p>Create an account with <strong id="claimEmail"></strong> and this order joins your order history.</p>
+      <button class="btn btn-primary" id="claimBtn">Create account</button>
+    </div>
+    <br>
+    <button class="btn btn-primary" data-nav="home">Continue shopping</button>
+  </div>
+</main>
+
+<!-- ================= FAQ ================= -->
+<main class="view" id="view-faq">
+  <div class="faq">
+    <h1>Questions, answered</h1>
+    <p class="sub">Everything about buying from this little demo shop.</p>
+    <div id="faqList"></div>
+  </div>
+</main>
+
+<!-- ================= LOGIN ================= -->
+<main class="view" id="view-login">
+  <div class="auth">
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to see your orders and check out faster.</p>
+    <div class="form-card">
+      <div class="field"><label for="liEmail">Email</label><input id="liEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="field"><label for="liPass">Password</label><input id="liPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <div class="form-msg" id="liMsg"></div>
+      <button class="btn btn-primary btn-block" id="liGo" style="margin-top:8px">Log in</button>
+      <p style="font-size:12px;color:var(--muted);margin-top:12px">Demo auth — stored only in this browser. Don’t reuse a real password.</p>
+    </div>
+    <p class="auth-switch">New to Lumen? <button id="toSignup">Create an account</button></p>
+  </div>
+</main>
+
+<!-- ================= SIGNUP ================= -->
+<main class="view" id="view-signup">
+  <div class="auth">
+    <h1>Join Lumen</h1>
+    <p class="sub">One account for faster checkout and order history.</p>
+    <div class="form-card">
+      <div class="field"><label for="suName">Full name</label><input id="suName" placeholder="Ada Lovelace" autocomplete="name"></div>
+      <div class="field"><label for="suEmail">Email</label><input id="suEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="frow2">
+        <div class="field"><label for="suPass">Password</label><input id="suPass" type="password" placeholder="6+ characters" autocomplete="new-password"></div>
+        <div class="field"><label for="suPass2">Confirm password</label><input id="suPass2" type="password" placeholder="Repeat it" autocomplete="new-password"></div>
+      </div>
+      <div class="form-msg" id="suMsg"></div>
+      <button class="btn btn-primary btn-block" id="suGo" style="margin-top:8px">Create account</button>
+      <p style="font-size:12px;color:var(--muted);margin-top:12px">Demo auth — passwords are hashed in-browser and never leave this device. Don’t reuse a real password.</p>
+    </div>
+    <p class="auth-switch">Already have an account? <button id="toLogin">Log in</button></p>
+  </div>
+</main>
+
+<!-- ================= ACCOUNT ================= -->
+<main class="view" id="view-account">
+  <div class="dash">
+    <h1>My account</h1>
+    <p class="who">Signed in as <strong id="dashName"></strong></p>
+    <div class="dash-tabs" id="dashTabs"></div>
+    <section id="dash-profile">
+      <div class="form-card" style="max-width:560px">
+        <h3 style="margin-bottom:14px">Profile</h3>
+        <div class="field"><label for="pfName">Full name</label><input id="pfName"></div>
+        <div class="field"><label for="pfEmail">Email</label><input id="pfEmail" type="email"></div>
+        <div class="form-msg" id="pfMsg"></div>
+        <button class="btn btn-primary" id="pfSave" style="margin-top:8px">Save changes</button>
+      </div>
+    </section>
+    <section id="dash-orders" style="display:none"></section>
+    <section id="dash-wishlist" style="display:none"></section>
+    <section id="dash-addresses" style="display:none"></section>
+  </div>
+</main>
+
+<!-- cart drawer -->
+<div class="drawer-scrim" id="drawerScrim"></div>
+<aside class="drawer" id="drawer" aria-label="Shopping cart">
+  <div class="drawer-head"><h3>Your cart</h3><button class="x-btn" id="drawerClose" aria-label="Close cart">✕</button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+
+<!-- sticky mobile add to cart -->
+<div class="sticky-atc" id="stickyAtc">
+  <div class="t"><div class="nm" id="stickyName"></div><div class="pr" id="stickyPrice"></div></div>
+  <button class="btn btn-primary" id="stickyAdd">Add</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo">Lumen<span class="dot">.</span></div>
+        <p>A fictional demo storefront. Everything here — products, prices, reviews — is invented for the theme.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.3" fill="currentColor" stroke="none"/></svg></a>
+          <a href="#" aria-label="X" title="X"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 4l16 16M20 4L4 20"/></svg></a>
+          <a href="#" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="4"/><path d="M10.5 9.8v4.4L14.5 12z" fill="currentColor" stroke="none"/></svg></a>
+          <a href="#" aria-label="RSS" title="RSS"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19a1 1 0 1 0 0 .01M5 11a8 8 0 0 1 8 8M5 4a15 15 0 0 1 15 15"/></svg></a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h4>Shop</h4>
+        <a data-cat-link="Presets">Presets</a>
+        <a data-cat-link="Templates">Templates</a>
+        <a data-cat-link="Ebooks">Ebooks</a>
+        <a data-nav="home">All products</a>
+      </div>
+      <div class="foot-col">
+        <h4>Help</h4>
+        <a data-nav="faq">FAQ</a>
+        <a href="mailto:hello@lumen.example">hello@lumen.example</a>
+        <a href="#" id="footTop">Back to top ↑</a>
+      </div>
+    </div>
+    <div class="foot-base">
+      <span>© 2026 Lumen Store — an original demo theme. No real goods are sold.</span>
+      <span>Single-file build · zero external requests</span>
+    </div>
+  </div>
+</footer>
+<script>
+/* ================================================================
+   LUMEN STORE — all original code. No third-party libraries.
+   ================================================================ */
+
+/* ---------- catalog (12 fictional products, 3 categories) ---------- */
+const PRODUCTS = [
+  { id:'p01', name:'Golden Hour Lightroom Presets', cat:'Presets', price:24, was:39,
+    hue:[32,18], desc:'Twelve warm, honeyed presets for Lightroom and Camera Raw. Built for backlit portraits and slow evenings — one click toward perpetual golden hour.',
+    inside:'12 .xmp presets · install guide (PDF) · before/after reference sheet',
+    files:'Works with Lightroom Classic 12+, Lightroom CC, and Adobe Camera Raw.', license:'Single-seat license. Use in unlimited personal and client projects; redistribution is not permitted.',
+    reviews:[ {n:'Maya R.', r:5, d:'2026-09-14', t:'The warm tones are gorgeous without looking orange. My entire autumn session edited itself, basically.'}, {n:'Jonas K.', r:4, d:'2026-10-02', t:'Great starting points. A couple run a touch contrasty on my Sony files, but easy to dial back.'} ] },
+  { id:'p02', name:'Ember Tones Mobile Presets', cat:'Presets', price:18, was:null,
+    hue:[14,350], desc:'Eight DNG mobile presets tuned for phone photography — smoky reds, softened highlights, and gentle grain for everyday frames.',
+    inside:'8 DNG presets · quick-install video walkthrough', files:'Works with the free Lightroom Mobile app (iOS and Android).', license:'Single-seat license. Unlimited personal use; please don’t share the files.',
+    reviews:[] },
+  { id:'p03', name:'Studio Matte Preset Pack', cat:'Presets', price:29, was:45,
+    hue:[210,190], desc:'Ten desaturated studio presets with lifted blacks and calm, matte contrast. Made for product shots, lookbooks, and quiet interiors.',
+    inside:'10 .xmp presets · 5 Lightroom Mobile DNGs · tonal recipe notes', files:'Lightroom Classic 11+, Lightroom CC, Camera Raw, and mobile.', license:'Single-seat license. Unlimited commercial and client work.',
+    reviews:[] },
+  { id:'p04', name:'Nocturne Night Edits', cat:'Presets', price:21, was:null, oos:true,
+    hue:[250,230], desc:'Nine presets for after-dark shooting — deep blues, controlled noise, and neon that stays believable. Currently resting; back soon.',
+    inside:'9 .xmp presets · night white-balance cheat sheet', files:'Lightroom Classic 12+ and Camera Raw.', license:'Single-seat license.',
+    reviews:[] },
+  { id:'p05', name:'Portfolio in a Weekend — Notion Template', cat:'Templates', price:34, was:null,
+    hue:[160,140], desc:'A complete Notion portfolio system: project database, case-study pages, testimonials board, and a pricing calculator. Launch your site in a weekend.',
+    inside:'1 Notion template link · setup video (22 min) · sample copy prompts', files:'Works with free and paid Notion accounts; duplicates in one click.', license:'Single-seat license. Build one portfolio; the template itself may not be resold.',
+    reviews:[] },
+  { id:'p06', name:'The Freelancer Invoice Kit', cat:'Templates', price:19, was:29,
+    hue:[45,35], desc:'Invoices, late-payment nudges, and scope-change letters — twenty polished templates that make getting paid the easy part.',
+    inside:'20 templates (Docs + PDF) · payment-terms guide', files:'Google Docs, Word, and printable PDF.', license:'Single-seat license. Unlimited client use.',
+    reviews:[] },
+  { id:'p07', name:'Wedding Day Timeline Builder', cat:'Templates', price:27, was:null,
+    hue:[330,300], desc:'A drag-and-drop timeline spreadsheet for planners and couples. Auto-calculates buffers, vendor call times, and golden-hour portraits.',
+    inside:'Timeline spreadsheet · 3 sample timelines · vendor contact sheet', files:'Google Sheets and Excel.', license:'Single-seat license. Use for unlimited weddings you plan.',
+    reviews:[ {n:'Priya S.', r:5, d:'2026-08-29', t:'Planned my sister’s wedding with this. The auto-buffer math saved us at least one meltdown.'} ] },
+  { id:'p08', name:'Content Calendar Bundle', cat:'Templates', price:22, was:null,
+    hue:[95,75], desc:'A year of content planning in one calm dashboard: idea bank, 52-week calendar, repurposing tracker, and analytics log.',
+    inside:'Notion dashboard + printable PDF planner', files:'Notion (free plan OK) and A4/Letter PDFs.', license:'Single-seat license.',
+    reviews:[] },
+  { id:'p09', name:'The Calm Creator', cat:'Ebooks', price:16, was:null,
+    hue:[180,160], desc:'A 140-page field guide to making things without burning out: rhythms over hustle, small audiences, and the art of the gentle launch.',
+    inside:'140-page ebook (PDF + EPUB) · 12 printable worksheets', files:'DRM-free PDF and EPUB; read anywhere.', license:'Yours to keep. Please don’t redistribute the files.',
+    reviews:[ {n:'Tom H.', r:5, d:'2026-07-19', t:'Read it in two sittings and immediately changed my posting schedule. Kinder and more useful than any “growth” book.'}, {n:'Aisha B.', r:5, d:'2026-09-30', t:'The worksheets alone are worth it. My Sunday planning ritual now takes twenty minutes.'} ] },
+  { id:'p10', name:'Light & Shadow: A Photo Essay', cat:'Ebooks', price:28, was:null,
+    hue:[25,55], desc:'Eighty black-and-white photographs and the stories behind them — a slow meditation on contrast, patience, and available light.',
+    inside:'80-photo essay (PDF) · printing guide for home darkrooms', files:'High-resolution PDF, print-ready.', license:'Personal use; the images remain the author’s copyright.',
+    reviews:[] },
+  { id:'p11', name:'Start Small, Ship Often', cat:'Ebooks', price:14, was:null,
+    hue:[200,220], desc:'A practical 90-page playbook for launching tiny digital products: pricing, landing pages, and the first hundred customers.',
+    inside:'90-page ebook (PDF + EPUB) · launch checklist', files:'DRM-free PDF and EPUB.', license:'Yours to keep.',
+    reviews:[] },
+  { id:'p12', name:'Field Notes: Japan', cat:'Ebooks', price:20, was:null,
+    hue:[0,20], desc:'Sketches, train-window observations, and seventy photographs from six weeks across Japan — a travel journal in three formats.',
+    inside:'Travel journal (PDF + EPUB) · 70-photo gallery · map of the route', files:'DRM-free PDF and EPUB.', license:'Yours to keep.',
+    reviews:[] },
+];
+const CATS = ['Presets','Templates','Ebooks'];
+const FAQS = [
+  { q:'Is this a real store?', a:'No — Lumen Store is a fictional demo storefront. The products, prices, reviews, and order numbers are all invented to showcase the theme. Nothing here is actually for sale.' },
+  { q:'How would delivery work in a real store?', a:'Digital products are typically delivered by email with secure download links, plus a download page in the customer’s account. Files stay available for re-download.' },
+  { q:'What payment methods are supported?', a:'In this demo, checkout is a mock — no real payment is processed. A production version of this theme would connect a payment processor such as Stripe or PayPal.' },
+  { q:'Can I use the WELCOME10 coupon more than once?', a:'It’s a demo code, so knock yourself out. In a real store, coupons are usually limited to one use per customer.' },
+  { q:'Do you offer refunds?', a:'Since nothing is sold here, there’s nothing to refund. Real digital stores often offer refunds within 7–14 days if a file is faulty or not as described.' },
+  { q:'Can I remix this theme for my own shop?', a:'That’s the idea. Swap the palette variables at the top of the stylesheet, replace the PRODUCTS array with your own catalog, and the whole layout adapts.' },
+];
+
+/* ---------- product art: cat placeholders via placecats.com ---------- */
+/* placecats.com caches per URL (long max-age), so the same URL always shows
+   the same cat: each product keeps one identity across cards, gallery, cart
+   and checkout. Width varies per product id for 12 distinct cats. */
+function artSVG(p, variant){
+  const n = parseInt(String(p.id).slice(1), 10) || 1;
+  const w = 400 + n; /* 401..412 */
+  const h = variant === 1 ? 520 : variant === 2 ? 480 : 500;
+  return '<img src="https://placecats.com/' + w + '/' + h + '" alt="' + esc(p.name) + '" loading="lazy" draggable="false">';
+}
+function art(p, variant){ return artSVG(p, variant || 0); }
+
+/* ---------- state + persistence ---------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('lumen_'+k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('lumen_'+k, JSON.stringify(v)); }catch(e){} }
+};
+const state = {
+  view:'home', cat:'All', query:'', wishOnly:false,
+  cart: store.get('cart', {}),            // id -> qty
+  wishlist: store.get('wishlist', []),    // [id]
+  coupon: store.get('coupon', null),
+  userReviews: store.get('reviews', {}),  // id -> [review]
+  current: null, slide: 0,
+};
+function saveCart(){ store.set('cart', state.cart); }
+function saveWish(){ store.set('wishlist', state.wishlist); }
+
+const $ = id => document.getElementById(id);
+const byId = id => PRODUCTS.find(p => p.id === id);
+const money = n => '$' + n.toFixed(2);
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let toastT = null;
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function allReviews(p){
+  return (p.reviews || []).concat(state.userReviews[p.id] || []);
+}
+function avgRating(p){
+  const r = allReviews(p); if(!r.length) return 0;
+  return r.reduce((s,x)=>s+x.r,0)/r.length;
+}
+function starsHTML(p){
+  const a = avgRating(p), n = allReviews(p).length;
+  let s = '';
+  for(let i=1;i<=5;i++) s += i <= Math.round(a) ? '★' : '☆';
+  return '<span class="stars">'+s+'<span class="n">'+(n ? n+' review'+(n>1?'s':'') : 'No reviews yet')+'</span></span>';
+}
+function priceHTML(p, big){
+  if(p.was) return '<span class="was">'+money(p.was)+'</span><span class="'+(big?'':'sale')+'">'+money(p.price)+'</span>';
+  return '<span>'+money(p.price)+'</span>';
+}
+
+/* ---------- router ---------- */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  $('view-'+name).classList.add('active');
+  state.view = name;
+  document.body.classList.toggle('on-product', name === 'product');
+  document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('active', a.getAttribute('data-nav') === name));
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+  closeDrawer();
+}
+
+/* ---------- home: tabs, grid, category cards ---------- */
+function renderTabs(){
+  const tabs = ['All'].concat(CATS);
+  if(state.wishOnly && !tabs.includes('Saved')) tabs.push('Saved');
+  $('tabs').innerHTML = tabs.map(t =>
+    '<button class="tab'+(state.cat===t?' active':'')+'" data-tab="'+t+'">'+t+'</button>').join('');
+  document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => {
+    state.cat = b.getAttribute('data-tab'); state.query = ''; state.wishOnly = state.cat === 'Saved';
+    renderTabs(); renderGrid();
+  }));
+}
+function filteredProducts(){
+  let list = PRODUCTS.slice();
+  if(state.cat !== 'All'){
+    list = state.wishOnly ? list.filter(p => state.wishlist.includes(p.id)) : list.filter(p => p.cat === state.cat);
+  }
+  if(state.query){
+    const q = state.query.toLowerCase();
+    list = list.filter(p => (p.name+' '+p.cat+' '+p.desc).toLowerCase().includes(q));
+  }
+  return list;
+}
+function cardHTML(p){
+  const wished = state.wishlist.includes(p.id);
+  return '<div class="card" data-open="'+p.id+'">'+
+    '<div class="art">'+art(p,0)+
+    (p.was && !p.oos ? '<span class="pill">Sale</span>' : '')+
+    (p.oos ? '<span class="pill soldout">Sold out</span>' : '')+
+    '<button class="wish-mini'+(wished?' on':'')+'" data-wish="'+p.id+'" aria-label="Toggle wishlist">'+
+      '<svg viewBox="0 0 24 24" fill="'+(wished?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C7 16.5 3.5 13.3 3.5 9.6 3.5 7 5.5 5 8 5c1.6 0 3.1.8 4 2.1C12.9 5.8 14.4 5 16 5c2.5 0 4.5 2 4.5 4.6 0 3.7-3.5 6.9-8.5 10.9z"/></svg>'+
+    '</button></div>'+
+    '<div class="info"><div class="cat">'+p.cat+'</div>'+
+    '<div class="title">'+esc(p.name)+'</div>'+
+    '<div class="price">'+priceHTML(p)+'</div></div></div>';
+}
+function renderGrid(){
+  const list = filteredProducts();
+  const g = $('grid');
+  if(!list.length){
+    g.innerHTML = '<div class="empty-note">Nothing on this shelf yet. Try another collection or clear your search.</div>';
+  } else {
+    g.innerHTML = list.map(cardHTML).join('');
+  }
+  let label = list.length + ' product' + (list.length === 1 ? '' : 's');
+  if(state.cat !== 'All') label += ' in ' + state.cat;
+  if(state.query) label += ' matching “' + state.query + '”';
+  $('gridCount').textContent = label;
+  $('clearFilter').classList.toggle('hidden', !state.query);
+  bindCards(g);
+}
+function bindCards(root){
+  root.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', e => {
+    if(e.target.closest('[data-wish]')) return;
+    openProduct(el.getAttribute('data-open'));
+  }));
+  root.querySelectorAll('[data-wish]').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleWish(b.getAttribute('data-wish'));
+  }));
+}
+function renderCatCards(){
+  $('catCards').innerHTML = CATS.map(c => {
+    const p = PRODUCTS.find(x => x.cat === c);
+    const n = PRODUCTS.filter(x => x.cat === c).length;
+    return '<div class="cat-card" data-catgo="'+c+'">'+art(p,1)+
+      '<div class="label"><h3>'+c+'</h3><span>'+n+' products — explore →</span></div></div>';
+  }).join('');
+  document.querySelectorAll('[data-catgo]').forEach(el => el.addEventListener('click', () => {
+    state.cat = el.getAttribute('data-catgo'); state.query=''; state.wishOnly=false;
+    renderTabs(); renderGrid();
+    document.getElementById('tabs').scrollIntoView({behavior:'smooth', block:'center'});
+  }));
+}
+
+/* ---------- product view ---------- */
+function openProduct(id){
+  const p = byId(id); if(!p) return;
+  state.current = id; state.slide = 0;
+  $('crumbCat').textContent = ' / ' + p.cat;
+  renderGallery(p); renderPdInfo(p); renderReviews(p); renderRail(p);
+  updateSticky(p);
+  showView('product');
+}
+function renderGallery(p){
+  const slides = [0,1,2].map(v => art(p, v));
+  $('gMain').innerHTML = slides[0] +
+    (p.was && !p.oos ? '<span class="pill">Sale</span>' : '') +
+    (p.oos ? '<span class="pill soldout">Sold out</span>' : '') +
+    '<button class="g-arrow prev" id="gPrev" aria-label="Previous">‹</button>'+
+    '<button class="g-arrow next" id="gNext" aria-label="Next">›</button>';
+  $('gDots').innerHTML = slides.map((_,i)=>'<button data-dot="'+i+'" class="'+(i===0?'on':'')+'" aria-label="Slide '+(i+1)+'"></button>').join('');
+  const set = i => {
+    state.slide = (i + slides.length) % slides.length;
+    $('gMain').querySelector('svg').outerHTML = slides[state.slide];
+    document.querySelectorAll('#gDots button').forEach((d,j)=>d.classList.toggle('on', j===state.slide));
+  };
+  $('gPrev').onclick = () => set(state.slide - 1);
+  $('gNext').onclick = () => set(state.slide + 1);
+  document.querySelectorAll('#gDots button').forEach(d => d.onclick = () => set(+d.getAttribute('data-dot')));
+}
+function renderPdInfo(p){
+  const wished = state.wishlist.includes(p.id);
+  $('pdInfo').innerHTML =
+    '<div class="cat">'+p.cat+'</div><h1>'+esc(p.name)+'</h1>'+starsHTML(p)+
+    '<div class="price-block"><span class="now">'+money(p.price)+'</span>'+
+    (p.was ? '<span class="was">'+money(p.was)+'</span><span class="sale-pill">Save '+money(p.was - p.price)+'</span>' : '')+'</div>'+
+    (p.oos
+      ? '<div class="stock-note out">Sold out — this item is temporarily unavailable.</div>'
+      : '<div class="stock-note in">In stock — instant download after checkout.</div>')+
+    '<p class="pd-desc">'+esc(p.desc)+'</p>'+
+    '<div class="pd-actions">'+
+      '<button class="btn btn-primary btn-block" id="pdAdd" '+(p.oos?'disabled':'')+'>'+(p.oos?'Sold out':'Add to cart')+'</button>'+
+      '<div class="row2">'+
+        '<button class="btn btn-dark btn-block" id="pdBuy" '+(p.oos?'disabled':'')+'>Buy now</button>'+
+        '<button class="wish-link'+(wished?' on':'')+'" id="pdWish">'+
+          '<svg viewBox="0 0 24 24" fill="'+(wished?'currentColor':'none')+'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C7 16.5 3.5 13.3 3.5 9.6 3.5 7 5.5 5 8 5c1.6 0 3.1.8 4 2.1C12.9 5.8 14.4 5 16 5c2.5 0 4.5 2 4.5 4.6 0 3.7-3.5 6.9-8.5 10.9z"/></svg>'+
+          (wished ? 'Saved to wishlist' : 'Add to wishlist')+'</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="share-row"><span class="lbl">Share</span>'+
+      '<button class="share-btn" id="copyLink">Copy link</button>'+
+      '<button class="share-btn" id="mailShare">Email</button></div>'+
+    '<details class="acc" open><summary>What’s inside <span class="pm">+</span></summary><div class="body">'+esc(p.inside)+'</div></details>'+
+    '<details class="acc"><summary>File details <span class="pm">+</span></summary><div class="body">'+esc(p.files)+'</div></details>'+
+    '<details class="acc"><summary>License <span class="pm">+</span></summary><div class="body">'+esc(p.license)+'</div></details>';
+  if(!p.oos){
+    $('pdAdd').onclick = () => { addToCart(p.id, 1); };
+    $('pdBuy').onclick = () => { addToCart(p.id, 1, true); openCheckout(); };
+  }
+  $('pdWish').onclick = () => toggleWish(p.id, true);
+  $('copyLink').onclick = () => {
+    const url = location.href.split('#')[0] + '#product-' + p.id;
+    const done = () => toast('Link copied to clipboard');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done, () => fallbackCopy(url, done));
+    } else fallbackCopy(url, done);
+  };
+  $('mailShare').onclick = () => {
+    location.href = 'mailto:?subject=' + encodeURIComponent('Have a look: ' + p.name) +
+      '&body=' + encodeURIComponent('I thought you might like this: ' + p.name + ' — ' + money(p.price));
+  };
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); done(); }catch(e){ toast('Copy this link: ' + text); }
+  document.body.removeChild(ta);
+}
+function renderReviews(p){
+  const rs = allReviews(p);
+  const list = rs.length
+    ? rs.map(r => '<div class="rev"><div class="head"><span><span class="who">'+esc(r.n)+'</span> <span class="stars">'+'★'.repeat(r.r)+'☆'.repeat(5-r.r)+'</span></span><span class="date">'+esc(r.d)+'</span></div><p>'+esc(r.t)+'</p></div>').join('')
+    : '<div class="empty-note" style="grid-column:auto">No reviews yet — be the first to share your thoughts.</div>';
+  $('reviews').innerHTML = '<h2>Reviews</h2>' + list +
+    '<div class="rev-form"><h3>Write a review</h3><div class="sub">Bought it? Tell the next maker what you thought.</div>'+
+    '<div class="frow"><div class="field"><label for="rvName">Name</label><input id="rvName" placeholder="Your name"></div>'+
+    '<div class="field"><label for="rvRate">Rating</label><select id="rvRate"><option value="5">★★★★★ — 5</option><option value="4">★★★★☆ — 4</option><option value="3">★★★☆☆ — 3</option><option value="2">★★☆☆☆ — 2</option><option value="1">★☆☆☆☆ — 1</option></select></div></div>'+
+    '<div class="field"><label for="rvText">Review</label><textarea id="rvText" placeholder="What did you make with it?"></textarea></div>'+
+    '<button class="btn btn-primary" id="rvSubmit">Submit review</button></div>';
+  $('rvSubmit').onclick = () => {
+    const n = $('rvName').value.trim(), t = $('rvText').value.trim(), r = +$('rvRate').value;
+    if(!n || !t){ toast('Please add your name and a few words'); return; }
+    const rev = { n:n, r:r, d:new Date().toISOString().slice(0,10), t:t };
+    state.userReviews[p.id] = (state.userReviews[p.id] || []).concat([rev]);
+    store.set('reviews', state.userReviews);
+    renderReviews(p); renderPdInfo(p);
+    toast('Thanks — your review is live');
+  };
+}
+function renderRail(p){
+  let rel = PRODUCTS.filter(x => x.id !== p.id && x.cat === p.cat);
+  const others = PRODUCTS.filter(x => x.id !== p.id && x.cat !== p.cat);
+  while(rel.length < 4 && others.length) rel.push(others.shift());
+  rel = rel.slice(0,4);
+  $('rail').innerHTML = rel.map(cardHTML).join('');
+  bindCards($('rail'));
+}
+function updateSticky(p){
+  $('stickyName').textContent = p.name;
+  $('stickyPrice').textContent = p.was ? money(p.price) + ' (was ' + money(p.was) + ')' : money(p.price);
+  const b = $('stickyAdd');
+  b.disabled = !!p.oos;
+  b.textContent = p.oos ? 'Sold out' : 'Add';
+  b.onclick = () => { if(!p.oos) addToCart(p.id, 1); };
+}
+
+/* ---------- wishlist ---------- */
+function toggleWish(id, rerenderPd){
+  const i = state.wishlist.indexOf(id);
+  if(i >= 0) state.wishlist.splice(i,1); else state.wishlist.push(id);
+  saveWish(); updateBadges();
+  if(rerenderPd && state.current) renderPdInfo(byId(state.current));
+  renderGrid();
+  if(state.view === 'account') renderAccount('wishlist');
+  toast(i >= 0 ? 'Removed from wishlist' : 'Saved to wishlist');
+}
+function updateBadges(){
+  const cq = Object.values(state.cart).reduce((s,q)=>s+q,0);
+  const cc = $('cartCount'); cc.textContent = cq; cc.classList.toggle('hidden', !cq);
+  const wc = $('wishCount'); wc.textContent = state.wishlist.length; wc.classList.toggle('hidden', !state.wishlist.length);
+}
+
+/* ---------- search ---------- */
+function openSearch(){ $('searchPanel').classList.add('open'); $('searchInput').focus(); renderSearch(''); }
+function closeSearch(){ $('searchPanel').classList.remove('open'); }
+function renderSearch(q){
+  const box = $('searchResults');
+  q = q.trim().toLowerCase();
+  if(!q){ box.innerHTML = ''; return; }
+  const hits = PRODUCTS.filter(p => (p.name+' '+p.cat+' '+p.desc).toLowerCase().includes(q)).slice(0,6);
+  box.innerHTML = hits.length
+    ? hits.map(p => '<div class="search-row" data-hit="'+p.id+'"><div class="thumb">'+art(p,0)+'</div><div><div class="nm">'+esc(p.name)+'</div><div class="cat">'+p.cat+'</div></div><div class="pr">'+money(p.price)+'</div></div>').join('')
+    : '<div class="search-hint" style="padding:12px 6px">No matches — try “preset”, “template”, or “ebook”.</div>';
+  box.querySelectorAll('[data-hit]').forEach(el => el.addEventListener('click', () => { closeSearch(); openProduct(el.getAttribute('data-hit')); }));
+}
+
+/* ---------- cart ---------- */
+function addToCart(id, qty, silent){
+  const p = byId(id);
+  if(!p || p.oos) return;
+  state.cart[id] = (state.cart[id] || 0) + qty;
+  saveCart(); updateBadges(); renderDrawer();
+  if(!silent){ openDrawer(); toast('Added to cart — ' + p.name); }
+}
+function cartQty(){ return Object.values(state.cart).reduce((s,q)=>s+q,0); }
+function cartSubtotal(){
+  return Object.entries(state.cart).reduce((s,[id,q]) => s + byId(id).price * q, 0);
+}
+function saleDiscount(){
+  return Object.entries(state.cart).reduce((s,[id,q]) => { const p = byId(id); return s + (p.was ? (p.was - p.price) * q : 0); }, 0);
+}
+function couponDiscount(sub){
+  return state.coupon === 'WELCOME10' ? sub * 0.10 : 0;
+}
+function totals(){
+  const sub = cartSubtotal();
+  const sale = saleDiscount();
+  const coup = couponDiscount(sub);
+  return { sub, sale, coup, total: Math.max(0, sub - coup) };
+}
+function openDrawer(){ renderDrawer(); $('drawer').classList.add('open'); $('drawerScrim').classList.add('open'); }
+function closeDrawer(){ $('drawer').classList.remove('open'); $('drawerScrim').classList.remove('open'); }
+function renderDrawer(){
+  const body = $('drawerBody'), foot = $('drawerFoot');
+  const ids = Object.keys(state.cart);
+  if(!ids.length){
+    body.innerHTML = '<div class="drawer-empty"><div class="big">Your cart is empty</div><p>Wander the shelves — something will catch your eye.</p><br><button class="btn btn-primary" id="emptyShop">Browse the shop</button></div>';
+    foot.innerHTML = '';
+    $('emptyShop').onclick = () => { closeDrawer(); showView('home'); };
+    return;
+  }
+  body.innerHTML = ids.map(id => {
+    const p = byId(id), q = state.cart[id];
+    return '<div class="line-item"><div class="thumb">'+art(p,0)+'</div>'+
+      '<div><div class="nm" data-open="'+id+'">'+esc(p.name)+'</div>'+
+      '<div class="unit">'+money(p.price)+' each</div>'+
+      '<div class="qty"><button data-dec="'+id+'" aria-label="Decrease">−</button><span class="qv">'+q+'</span><button data-inc="'+id+'" aria-label="Increase">+</button></div><br>'+
+      '<button class="rm" data-rm="'+id+'">Remove</button></div>'+
+      '<div class="line-right"><div class="lp">'+money(p.price*q)+'</div></div></div>';
+  }).join('');
+  const t = totals();
+  const xsellPool = PRODUCTS.filter(p => !state.cart[p.id] && !p.oos);
+  const xs = xsellPool.slice(0,2);
+  foot.innerHTML =
+    (t.sale > 0 ? '<div class="trow disc"><span>On Sale Discount</span><span>−'+money(t.sale)+'</span></div>' : '')+
+    '<div class="trow"><span>Subtotal</span><span>'+money(t.sub)+'</span></div>'+
+    (t.coup > 0 ? '<div class="trow disc"><span>Coupon WELCOME10</span><span>−'+money(t.coup)+'</span></div>' : '')+
+    '<div class="trow total"><span>Total</span><span>'+money(t.total)+'</span></div>'+
+    (xs.length ? '<div class="xsell"><h4>Pairs well with</h4>'+xs.map(p =>
+      '<div class="xsell-item"><div class="thumb">'+art(p,0)+'</div><div><div class="nm">'+esc(p.name)+'</div><div class="pr">'+money(p.price)+'</div></div><button data-xs="'+p.id+'">Add</button></div>').join('')+'</div>' : '')+
+    '<br><button class="btn btn-dark btn-block" id="goCheckout" style="padding:16px">Checkout</button>';
+  body.querySelectorAll('[data-open]').forEach(el => el.onclick = () => openProduct(el.getAttribute('data-open')));
+  body.querySelectorAll('[data-inc]').forEach(b => b.onclick = () => { state.cart[b.getAttribute('data-inc')]++; saveCart(); updateBadges(); renderDrawer(); });
+  body.querySelectorAll('[data-dec]').forEach(b => b.onclick = () => {
+    const id = b.getAttribute('data-dec');
+    if(--state.cart[id] <= 0) delete state.cart[id];
+    saveCart(); updateBadges(); renderDrawer();
+  });
+  body.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { delete state.cart[b.getAttribute('data-rm')]; saveCart(); updateBadges(); renderDrawer(); });
+  foot.querySelectorAll('[data-xs]').forEach(b => b.onclick = () => addToCart(b.getAttribute('data-xs'), 1, true));
+  $('goCheckout').onclick = openCheckout;
+}
+
+/* ---------- checkout ---------- */
+function openCheckout(){
+  if(!cartQty()){ toast('Your cart is empty'); return; }
+  closeDrawer(); renderSummary(); showView('checkout');
+}
+function renderSummary(){
+  const ids = Object.keys(state.cart);
+  $('sumItems').innerHTML = ids.map(id => {
+    const p = byId(id), q = state.cart[id];
+    return '<div class="sum-item"><div class="thumb">'+art(p,0)+'<span class="q">'+q+'</span></div>'+
+      '<div class="nm">'+esc(p.name)+'</div><div class="pr">'+money(p.price*q)+'</div></div>';
+  }).join('');
+  renderTotals();
+  const ci = $('couponInput');
+  ci.value = state.coupon || '';
+  updateCouponMsg();
+  prefillCheckout();
+}
+function renderTotals(){
+  const t = totals();
+  $('sumTotals').innerHTML =
+    '<div class="trow"><span>Subtotal</span><span>'+money(t.sub)+'</span></div>'+
+    (t.sale > 0 ? '<div class="trow disc"><span>On Sale Discount</span><span>−'+money(t.sale)+'</span></div>' : '')+
+    (t.coup > 0 ? '<div class="trow disc"><span>Coupon (WELCOME10)</span><span>−'+money(t.coup)+'</span></div>' : '')+
+    '<div class="trow total"><span>Total</span><span>'+money(t.total)+'</span></div>';
+}
+function updateCouponMsg(){
+  const m = $('couponMsg');
+  if(state.coupon === 'WELCOME10'){ m.className = 'coupon-msg ok'; m.textContent = 'WELCOME10 applied — 10% off.'; }
+  else { m.className = 'coupon-msg'; m.textContent = ''; }
+}
+function applyCoupon(){
+  const code = $('couponInput').value.trim().toUpperCase();
+  const m = $('couponMsg');
+  if(!code){ return; }
+  if(code === 'WELCOME10'){
+    state.coupon = code; store.set('coupon', code);
+    updateCouponMsg(); renderTotals(); toast('Coupon applied');
+  } else {
+    m.className = 'coupon-msg err'; m.textContent = 'That code doesn’t look right — try WELCOME10.';
+  }
+}
+function placeOrder(){
+  const email = normEmail($('fEmail').value);
+  if(!validEmail(email)){ toast('Please enter a valid email'); $('fEmail').focus(); return; }
+  const t = totals();
+  const ids = Object.keys(state.cart);
+  const ord = 'LS-' + Date.now().toString(36).toUpperCase().slice(-6).padStart(6,'0');
+  const order = {
+    no: ord, date: new Date().toISOString(),
+    items: ids.map(id => ({ id: id, name: byId(id).name, price: byId(id).price, qty: state.cart[id] })),
+    sub: t.sub, saleDisc: t.sale, coupDisc: t.coup, coupon: state.coupon, total: t.total, email: email
+  };
+  const u = currentUser();
+  if(u && normEmail(u.email) === email){
+    const orders = store.get('orders', {});
+    orders[u.email] = orders[u.email] || [];
+    orders[u.email].unshift(order);
+    store.set('orders', orders);
+    state.lastOrderGuest = false;
+  } else {
+    const g = store.get('guest_orders', []);
+    g.unshift(order);
+    store.set('guest_orders', g);
+    state.lastOrderGuest = true;
+    state.prefillEmail = email;
+  }
+  $('ordNo').textContent = ord;
+  $('confirmMsg').textContent = 'A receipt and ' + cartQty() + ' download link' + (cartQty() > 1 ? 's' : '') +
+    ' (' + money(t.total) + ' total) would be on their way to ' + email + '.';
+  const cb = $('claimBox');
+  if(state.lastOrderGuest && !u){
+    cb.style.display = '';
+    $('claimEmail').textContent = email;
+  } else {
+    cb.style.display = 'none';
+  }
+  state.cart = {}; state.coupon = null;
+  store.set('coupon', null); saveCart(); updateBadges();
+  showView('confirm');
+}
+
+/* ================================================================
+   ACCOUNTS — demo-grade client-side auth. localStorage only.
+   SECURITY NOTE: this is a demo, not real security. Passwords are
+   hashed in-browser with unsalted SHA-256 (or a non-crypto fallback
+   when crypto.subtle is unavailable) and stored in localStorage,
+   which any script on the page could read. Never reuse a real
+   password here, and never ship this pattern in production.
+   Keys: lumen_users (email -> {name, pw, addresses[], created}),
+         lumen_session (signed-in email), lumen_orders (email -> [orders]),
+         lumen_guest_orders ([orders not tied to an account]).
+   ================================================================ */
+const normEmail = e => String(e || '').trim().toLowerCase();
+const validEmail = e => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+const getUsers = () => store.get('users', {});
+const setUsers = u => store.set('users', u);
+const getSession = () => store.get('session', null);
+function currentUser(){
+  const em = getSession();
+  if(!em) return null;
+  const rec = getUsers()[em];
+  return rec ? { email: em, name: rec.name, addresses: rec.addresses || [] } : null;
+}
+function saveUserRecord(email, rec){ const u = getUsers(); u[email] = rec; setUsers(u); }
+
+/* DEMO ONLY password hashing — see the security note above. */
+async function hashPw(pw){
+  const salted = 'lumen-demo|' + pw;
+  try{
+    if(window.crypto && crypto.subtle){
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salted));
+      return 'sha256$' + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+  }catch(e){ /* fall through to demo fallback */ }
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for(let i = 0; i < salted.length; i++){
+    const ch = salted.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 'demo$' + (h2 >>> 0).toString(16).padStart(8,'0') + (h1 >>> 0).toString(16).padStart(8,'0');
+}
+
+/* move guest orders whose email matches into the new/existing account */
+function claimGuestOrders(email){
+  const g = store.get('guest_orders', []);
+  if(!g.length) return 0;
+  const mine = g.filter(o => normEmail(o.email) === email);
+  if(!mine.length) return 0;
+  const orders = store.get('orders', {});
+  orders[email] = mine.concat(orders[email] || []);
+  store.set('orders', orders);
+  store.set('guest_orders', g.filter(o => normEmail(o.email) !== email));
+  return mine.length;
+}
+
+/* ---------- header + mobile nav account state ---------- */
+function renderAcctHeader(){
+  const u = currentUser();
+  const btn = $('acctBtn'), menu = $('acctMenu');
+  if(u){
+    const initial = (u.name.trim()[0] || '?').toUpperCase();
+    btn.innerHTML = '<span class="avatar-btn">' + esc(initial) + '</span>';
+    btn.setAttribute('aria-label', 'Account menu');
+    menu.innerHTML =
+      '<div class="am-head">' + esc(u.name) + '<small>' + esc(u.email) + '</small></div>' +
+      '<button data-am="profile">My account</button>' +
+      '<button data-am="orders">Order history</button>' +
+      '<button data-am="wishlist">Wishlist</button>' +
+      '<button data-am="logout">Log out</button>';
+  } else {
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/></svg>';
+    btn.setAttribute('aria-label', 'Log in');
+    menu.innerHTML = '';
+  }
+  menu.querySelectorAll('[data-am]').forEach(b => b.addEventListener('click', () => {
+    closeAcctMenu();
+    const a = b.getAttribute('data-am');
+    if(a === 'logout'){ logout(); return; }
+    goAccount(a);
+  }));
+  renderMnavAcct();
+}
+function openAcctMenu(){
+  if(!currentUser()){ showView('login'); renderLogin(); return; }
+  $('acctMenu').classList.toggle('open');
+}
+function closeAcctMenu(){ const m = $('acctMenu'); if(m) m.classList.remove('open'); }
+function renderMnavAcct(){
+  const box = $('mnavAcct'); if(!box) return;
+  const u = currentUser();
+  box.innerHTML = u
+    ? '<a class="mlink" href="#" data-am="profile">Hi, ' + esc(u.name.split(' ')[0]) + ' — My account</a>' +
+      '<a class="mlink" href="#" data-am="orders">Order history</a>' +
+      '<a class="mlink" href="#" data-am="logout">Log out</a>'
+    : '<a class="mlink" href="#" id="mnavLogin">Log in / Sign up</a>';
+  box.querySelectorAll('[data-am]').forEach(b => b.addEventListener('click', e => {
+    e.preventDefault(); $('mobileNav').classList.remove('open');
+    const a = b.getAttribute('data-am');
+    if(a === 'logout'){ logout(); return; }
+    goAccount(a);
+  }));
+  const li = $('mnavLogin');
+  if(li) li.addEventListener('click', e => { e.preventDefault(); $('mobileNav').classList.remove('open'); showView('login'); renderLogin(); });
+}
+
+/* ---------- protected-route guard ---------- */
+let loginNotice = '', pendingView = null;
+function goAccount(tab){
+  if(!currentUser()){
+    loginNotice = 'Please log in to view your account.';
+    pendingView = tab || 'profile';
+    showView('login'); renderLogin();
+    return;
+  }
+  showView('account'); renderAccount(tab || 'profile');
+}
+
+/* ---------- login / signup ---------- */
+function renderLogin(){
+  const m = $('liMsg'); m.className = 'form-msg'; m.textContent = '';
+  if(loginNotice){ m.className = 'form-msg err'; m.textContent = loginNotice; loginNotice = ''; }
+  if(state.prefillEmail){ $('liEmail').value = state.prefillEmail; state.prefillEmail = ''; }
+}
+function renderSignup(){
+  const m = $('suMsg'); m.className = 'form-msg'; m.textContent = '';
+  if(state.prefillEmail){ $('suEmail').value = state.prefillEmail; state.prefillEmail = ''; }
+}
+function formMsg(id, ok, text){ const m = $(id); m.className = 'form-msg ' + (ok ? 'ok' : 'err'); m.textContent = text; }
+async function doSignup(){
+  const name = $('suName').value.trim();
+  const email = normEmail($('suEmail').value);
+  const pw = $('suPass').value, pw2 = $('suPass2').value;
+  if(!name) return formMsg('suMsg', false, 'Please tell us your name.');
+  if(!validEmail(email)) return formMsg('suMsg', false, 'That email doesn’t look right.');
+  if(pw.length < 6) return formMsg('suMsg', false, 'Password needs at least 6 characters (demo — don’t reuse a real one).');
+  if(pw !== pw2) return formMsg('suMsg', false, 'Passwords don’t match.');
+  const users = getUsers();
+  if(users[email]) return formMsg('suMsg', false, 'An account with that email already exists — try logging in.');
+  users[email] = { name: name, pw: await hashPw(pw), addresses: [], created: new Date().toISOString() };
+  setUsers(users);
+  store.set('session', email);
+  const claimed = claimGuestOrders(email);
+  finishAuth('Welcome, ' + name.split(' ')[0] + '!' + (claimed ? ' ' + claimed + ' past order' + (claimed > 1 ? 's' : '') + ' saved to your history.' : ''));
+}
+async function doLogin(){
+  const email = normEmail($('liEmail').value);
+  const pw = $('liPass').value;
+  const rec = getUsers()[email];
+  if(!rec) return formMsg('liMsg', false, 'No account found for that email.');
+  if(rec.pw !== await hashPw(pw)) return formMsg('liMsg', false, 'Wrong password — try again.');
+  store.set('session', email);
+  const claimed = claimGuestOrders(email);
+  finishAuth('Welcome back, ' + rec.name.split(' ')[0] + '!' + (claimed ? ' ' + claimed + ' past order' + (claimed > 1 ? 's' : '') + ' saved to your history.' : ''));
+}
+function finishAuth(msg){
+  renderAcctHeader();
+  toast(msg);
+  const dest = pendingView; pendingView = null;
+  if(dest && dest !== 'profile'){ goAccount(dest); }
+  else { showView('account'); renderAccount('profile'); }
+}
+function logout(){
+  store.set('session', null);
+  pendingView = null; loginNotice = '';
+  closeAcctMenu(); renderAcctHeader();
+  showView('home'); toast('Signed out — see you soon.');
+}
+
+/* ---------- account dashboard ---------- */
+const DASH_TABS = [['profile','Profile'],['orders','Orders'],['wishlist','Wishlist'],['addresses','Addresses']];
+function renderAccount(tab){
+  const u = currentUser();
+  if(!u){ goAccount('profile'); return; }
+  tab = tab || 'profile';
+  $('dashTabs').innerHTML = DASH_TABS.map(([k,l]) =>
+    '<button class="tab' + (tab === k ? ' active' : '') + '" data-dtab="' + k + '">' + l + '</button>').join('');
+  $('dashName').textContent = u.name;
+  document.querySelectorAll('[data-dtab]').forEach(b => b.addEventListener('click', () => renderAccount(b.getAttribute('data-dtab'))));
+  ['profile','orders','wishlist','addresses'].forEach(k => $('dash-' + k).style.display = k === tab ? '' : 'none');
+  if(tab === 'profile') renderProfile(u);
+  if(tab === 'orders') renderOrders(u);
+  if(tab === 'wishlist') renderDashWish();
+  if(tab === 'addresses') renderAddresses(u);
+}
+function renderProfile(u){
+  $('pfName').value = u.name;
+  $('pfEmail').value = u.email;
+  const m = $('pfMsg'); m.className = 'form-msg'; m.textContent = '';
+  $('pfSave').onclick = () => {
+    const name = $('pfName').value.trim();
+    const email = normEmail($('pfEmail').value);
+    if(!name) return formMsg('pfMsg', false, 'Name can’t be empty.');
+    if(!validEmail(email)) return formMsg('pfMsg', false, 'That email doesn’t look right.');
+    const users = getUsers();
+    if(email !== u.email && users[email]) return formMsg('pfMsg', false, 'That email is already in use.');
+    const rec = users[u.email];
+    delete users[u.email];
+    rec.name = name;
+    users[email] = rec;
+    setUsers(users);
+    store.set('session', email);
+    const orders = store.get('orders', {});
+    if(orders[u.email]){ orders[email] = (orders[u.email] || []).concat(orders[email] || []); delete orders[u.email]; store.set('orders', orders); }
+    renderAcctHeader();
+    $('dashName').textContent = name;
+    formMsg('pfMsg', true, 'Profile updated.');
+  };
+}
+function orderDate(iso){
+  try{ return new Date(iso).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' }); }
+  catch(e){ return ''; }
+}
+function renderOrders(u){
+  const box = $('dash-orders');
+  const list = (store.get('orders', {})[u.email] || []);
+  if(!list.length){
+    box.innerHTML = '<div class="empty-state"><div class="big">No orders yet</div><p>Your receipts will live here once you check out.</p><br><button class="btn btn-primary" id="ordShop">Start shopping</button></div>';
+    $('ordShop').onclick = () => showView('home');
+    return;
+  }
+  box.innerHTML = list.map((o, i) => {
+    const qty = o.items.reduce((s, x) => s + x.qty, 0);
+    return '<div class="order"><button class="order-head" data-oh="' + i + '">' +
+      '<span><span class="no">' + esc(o.no) + '</span><br><span class="meta">' + esc(orderDate(o.date)) + ' · ' + qty + ' item' + (qty > 1 ? 's' : '') + '</span></span>' +
+      '<span class="tot">' + money(o.total) + '</span></button>' +
+      '<div class="order-body">' +
+      o.items.map(it => '<div class="sum-item"><div class="nm">' + esc(it.name) + ' <span style="color:var(--muted)">× ' + it.qty + '</span></div><div class="pr">' + money(it.price * it.qty) + '</div></div>').join('') +
+      '<div class="trow"><span>Subtotal</span><span>' + money(o.sub) + '</span></div>' +
+      (o.saleDisc > 0 ? '<div class="trow disc"><span>On Sale Discount</span><span>−' + money(o.saleDisc) + '</span></div>' : '') +
+      (o.coupDisc > 0 ? '<div class="trow disc"><span>Coupon' + (o.coupon ? ' (' + esc(o.coupon) + ')' : '') + '</span><span>−' + money(o.coupDisc) + '</span></div>' : '') +
+      '<div class="trow total"><span>Total</span><span>' + money(o.total) + '</span></div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:8px">Receipt sent to ' + esc(o.email) + '</div>' +
+      '</div></div>';
+  }).join('');
+  box.querySelectorAll('[data-oh]').forEach(h => h.addEventListener('click', () => h.parentElement.classList.toggle('open')));
+}
+function renderDashWish(){
+  const box = $('dash-wishlist');
+  const list = PRODUCTS.filter(p => state.wishlist.includes(p.id));
+  if(!list.length){
+    box.innerHTML = '<div class="empty-state"><div class="big">Nothing saved yet</div><p>Tap the heart on any product and it will wait for you here.</p><br><button class="btn btn-primary" id="wishShop">Browse the shop</button></div>';
+    $('wishShop').onclick = () => showView('home');
+    return;
+  }
+  box.innerHTML = '<div class="grid" style="margin-bottom:0">' + list.map(cardHTML).join('') + '</div>';
+  bindCards(box);
+}
+function renderAddresses(u){
+  const box = $('dash-addresses');
+  const addrs = u.addresses || [];
+  let html = '';
+  if(!addrs.length){
+    html += '<div class="empty-state" style="padding:24px 12px"><div class="big">No saved addresses</div><p>Add one and checkout fills itself in.</p></div>';
+  } else {
+    html += '<div class="addr-grid">' + addrs.map((a, i) =>
+      '<div class="addr-card"><div class="lbl">' + esc(a.label || 'Address') + '</div>' +
+      '<div class="who">' + esc(a.name) + '</div>' +
+      '<div class="lines">' + esc(a.street) + '<br>' + esc(a.city) + ', ' + esc(a.state) + ' ' + esc(a.zip) + '<br>' + esc(a.country) + '</div>' +
+      '<div class="addr-actions"><button class="link-btn" data-aedit="' + i + '">Edit</button><button class="link-btn" data-adel="' + i + '">Delete</button></div></div>'
+    ).join('') + '</div>';
+  }
+  html += '<div id="addrFormWrap" style="display:none;margin-top:20px"><div class="form-card"><h3 id="addrFormTitle" style="margin-bottom:14px">Add address</h3>' +
+    '<div class="frow2"><div class="field"><label>Label</label><input id="aLabel" placeholder="Home"></div>' +
+    '<div class="field"><label>Full name</label><input id="aName" placeholder="Ada Lovelace"></div></div>' +
+    '<div class="field"><label>Street</label><input id="aStreet" placeholder="123 Paper Lane"></div>' +
+    '<div class="frow2"><div class="field"><label>City</label><input id="aCity" placeholder="Portland"></div>' +
+    '<div class="field"><label>State / Province</label><input id="aState" placeholder="OR"></div></div>' +
+    '<div class="frow2"><div class="field"><label>ZIP / Postal code</label><input id="aZip" placeholder="97201"></div>' +
+    '<div class="field"><label>Country</label><input id="aCountry" placeholder="United States"></div></div>' +
+    '<div class="form-msg" id="addrMsg"></div>' +
+    '<div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap"><button class="btn btn-primary" id="addrSave">Save address</button><button class="btn btn-ghost" id="addrCancel">Cancel</button></div>' +
+    '</div></div>' +
+    '<div style="margin-top:18px"><button class="btn btn-ghost" id="addrAdd">+ Add address</button></div>';
+  box.innerHTML = html;
+  let editing = -1;
+  const openForm = i => {
+    editing = i;
+    $('addrFormTitle').textContent = i >= 0 ? 'Edit address' : 'Add address';
+    const a = i >= 0 ? addrs[i] : {};
+    $('aLabel').value = a.label || ''; $('aName').value = a.name || u.name;
+    $('aStreet').value = a.street || ''; $('aCity').value = a.city || '';
+    $('aState').value = a.state || ''; $('aZip').value = a.zip || ''; $('aCountry').value = a.country || '';
+    $('addrMsg').className = 'form-msg'; $('addrMsg').textContent = '';
+    $('addrFormWrap').style.display = '';
+    $('addrFormWrap').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  };
+  $('addrAdd').onclick = () => openForm(-1);
+  $('addrCancel').onclick = () => { $('addrFormWrap').style.display = 'none'; };
+  $('addrSave').onclick = () => {
+    const a = {
+      label: $('aLabel').value.trim() || 'Address',
+      name: $('aName').value.trim(), street: $('aStreet').value.trim(),
+      city: $('aCity').value.trim(), state: $('aState').value.trim(),
+      zip: $('aZip').value.trim(), country: $('aCountry').value.trim()
+    };
+    if(!a.name || !a.street || !a.city) return formMsg('addrMsg', false, 'Name, street, and city are required.');
+    const users = getUsers();
+    const rec = users[u.email];
+    rec.addresses = rec.addresses || [];
+    if(editing >= 0) rec.addresses[editing] = a; else rec.addresses.push(a);
+    saveUserRecord(u.email, rec);
+    renderAccount('addresses');
+    toast(editing >= 0 ? 'Address updated' : 'Address saved');
+  };
+  box.querySelectorAll('[data-aedit]').forEach(b => b.addEventListener('click', () => openForm(+b.getAttribute('data-aedit'))));
+  box.querySelectorAll('[data-adel]').forEach(b => b.addEventListener('click', () => {
+    const users = getUsers();
+    const rec = users[u.email];
+    rec.addresses.splice(+b.getAttribute('data-adel'), 1);
+    saveUserRecord(u.email, rec);
+    renderAccount('addresses');
+    toast('Address deleted');
+  }));
+}
+
+/* ---------- checkout prefill for signed-in shoppers ---------- */
+function prefillCheckout(){
+  const u = currentUser();
+  const wrap = $('addrPickerWrap');
+  if(!u){ wrap.style.display = 'none'; return; }
+  if(u.email && !$('fEmail').value) $('fEmail').value = u.email;
+  if(u.name && !$('fFirst').value){
+    const parts = u.name.split(' ');
+    $('fFirst').value = parts[0];
+    if(parts.length > 1 && !$('fLast').value) $('fLast').value = parts.slice(1).join(' ');
+  }
+  const addrs = u.addresses || [];
+  if(!addrs.length){ wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  const sel = $('addrPicker');
+  sel.innerHTML = '<option value="">Choose a saved address…</option>' + addrs.map((a, i) =>
+    '<option value="' + i + '">' + esc(a.label) + ' — ' + esc(a.street) + ', ' + esc(a.city) + '</option>').join('');
+  sel.onchange = () => {
+    const a = addrs[+sel.value]; if(!a) return;
+    const nm = a.name.split(' ');
+    $('fFirst').value = nm[0]; $('fLast').value = nm.slice(1).join(' ');
+    $('fState').value = a.state; $('fZip').value = a.zip;
+    const co = $('fCountry');
+    for(let i = 0; i < co.options.length; i++){
+      if(co.options[i].text.toLowerCase() === String(a.country).toLowerCase()){ co.selectedIndex = i; break; }
+    }
+    toast('Address filled from “' + a.label + '”');
+  };
+}
+
+/* ---------- FAQ ---------- */
+function renderFaq(){
+  $('faqList').innerHTML = FAQS.map(f =>
+    '<details class="acc"><summary>'+esc(f.q)+' <span class="pm">+</span></summary><div class="body">'+esc(f.a)+'</div></details>').join('');
+}
+
+/* ---------- deep link (#product-p01) ---------- */
+function handleHash(){
+  const h = location.hash;
+  if(h && h.indexOf('#product-') === 0){
+    const id = h.replace('#product-','');
+    if(byId(id)) openProduct(id);
+  } else if(h === '#account'){
+    goAccount('profile');
+  } else if(h === '#login'){
+    showView('login'); renderLogin();
+  } else if(h === '#signup'){
+    showView('signup'); renderSignup();
+  }
+}
+
+/* ---------- init ---------- */
+function init(){
+  renderTabs(); renderGrid(); renderCatCards(); renderFaq(); updateBadges();
+  renderAcctHeader();
+  $('acctBtn').onclick = e => { e.stopPropagation(); openAcctMenu(); };
+  $('liGo').onclick = () => doLogin();
+  $('suGo').onclick = () => doSignup();
+  $('toSignup').onclick = () => { showView('signup'); renderSignup(); };
+  $('toLogin').onclick = () => { showView('login'); renderLogin(); };
+  $('liPass').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+  $('suPass2').addEventListener('keydown', e => { if(e.key === 'Enter') doSignup(); });
+  $('claimBtn').onclick = () => { showView('signup'); renderSignup(); };
+
+  document.querySelectorAll('[data-nav]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    showView(a.getAttribute('data-nav'));
+    $('mobileNav').classList.remove('open');
+  }));
+  document.querySelectorAll('[data-cat-link]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    state.cat = a.getAttribute('data-cat-link'); state.query=''; state.wishOnly=false;
+    renderTabs(); renderGrid(); showView('home');
+    setTimeout(() => $('tabs').scrollIntoView({behavior:'smooth', block:'center'}), 60);
+  }));
+  document.querySelectorAll('[data-close-mnav]').forEach(el => el.addEventListener('click', () => $('mobileNav').classList.remove('open')));
+  $('hamburger').onclick = () => $('mobileNav').classList.add('open');
+
+  $('heroCta').onclick = () => $('tabs').scrollIntoView({behavior:'smooth', block:'center'});
+  $('clearFilter').onclick = () => { state.query=''; renderGrid(); };
+
+  $('searchBtn').onclick = () => $('searchPanel').classList.contains('open') ? closeSearch() : openSearch();
+  $('searchInput').addEventListener('input', e => renderSearch(e.target.value));
+  $('searchInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter'){
+      state.query = e.target.value.trim(); state.cat = 'All'; state.wishOnly = false;
+      renderTabs(); renderGrid(); closeSearch(); showView('home');
+    }
+    if(e.key === 'Escape') closeSearch();
+  });
+  document.addEventListener('click', e => {
+    if($('searchPanel').classList.contains('open') && !e.target.closest('.search-panel') && !e.target.closest('#searchBtn')) closeSearch();
+    if(!e.target.closest('#acctWrap')) closeAcctMenu();
+  });
+
+  $('wishBtn').onclick = () => {
+    if(!state.wishlist.length){ toast('Tap the heart on any product to save it here'); return; }
+    state.cat = 'Saved'; state.wishOnly = true; state.query = '';
+    renderTabs(); renderGrid(); showView('home');
+    setTimeout(() => $('tabs').scrollIntoView({behavior:'smooth', block:'center'}), 60);
+  };
+  $('cartBtn').onclick = openDrawer;
+  $('drawerClose').onclick = closeDrawer;
+  $('drawerScrim').onclick = closeDrawer;
+  document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closeDrawer(); closeSearch(); closeAcctMenu(); } });
+
+  $('backBtn').onclick = () => showView('home');
+  $('backBtn2').onclick = () => showView('home');
+
+  document.querySelectorAll('.pay-opt').forEach(o => o.addEventListener('click', () => {
+    document.querySelectorAll('.pay-opt').forEach(x => { x.classList.remove('sel'); x.querySelector('input').checked = false; });
+    o.classList.add('sel'); o.querySelector('input').checked = true;
+    $('cardFields').style.display = o.getAttribute('data-pay') === 'card' ? '' : 'none';
+  }));
+  $('couponApply').onclick = applyCoupon;
+  $('couponInput').addEventListener('keydown', e => { if(e.key === 'Enter') applyCoupon(); });
+  $('placeOrder').onclick = placeOrder;
+
+  $('footTop').onclick = e => { e.preventDefault(); window.scrollTo({top:0, behavior:'smooth'}); };
+  document.querySelectorAll('footer .socials a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); toast('Demo link — no social accounts yet'); }));
+
+  window.addEventListener('hashchange', handleHash);
+  handleHash();
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

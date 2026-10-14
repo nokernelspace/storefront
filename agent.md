@@ -14,7 +14,8 @@ Primary Developer and Maintainer: Andros
 Due to Spring there are many options for an HTTP Server.
 
 ## Current Configuration
-Dependency Management : Maven
+Dependency Management : Maven. We don't use Gradle at the moment because its dependency scope design of `api` ,`implementation`, and `annotationProcessor` encourages a closed-source design when allowing other developers to extend functionality.
+Relational Database: MySQL
 
 # FileSystem
 .vscode                             - DO NOT MODIFY

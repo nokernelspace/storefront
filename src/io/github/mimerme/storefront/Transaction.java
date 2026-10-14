@@ -1,4 +1,4 @@
-package io.github.mimerme.core;
+package io.github.mimerme.storefront;
 
 import java.util.List;
 

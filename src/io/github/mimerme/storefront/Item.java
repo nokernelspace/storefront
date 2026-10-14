@@ -1,4 +1,4 @@
-package io.github.mimerme.core;
+package io.github.mimerme.storefront;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import io.github.mimerme.Utils;
-import io.github.mimerme.store.Category;
+import io.github.mimerme.data.Category;
+import io.github.mimerme.yaros.Utils;
 
 // IMPORTANT: NOT A GSON thing
 // Buyer perspective

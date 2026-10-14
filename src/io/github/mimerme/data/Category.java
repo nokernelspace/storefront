@@ -1,4 +1,4 @@
-package io.github.mimerme.store;
+package io.github.mimerme.data;
 
 public enum Category {
 	GROCERY,

@@ -1,19 +1,15 @@
-package io.github.mimerme.store;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.github.mimerme.Utils;
-import io.github.mimerme.core.Product;
-import io.github.mimerme.users.User;
+package io.github.mimerme.data;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import io.github.mimerme.yaros.Utils;
 
 public class StoreInformation {
 	/// Lazily initialized. this has caused problems

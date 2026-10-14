@@ -1,4 +1,4 @@
-package io.github.mimerme;
+package main;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

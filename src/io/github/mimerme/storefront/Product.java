@@ -1,8 +1,6 @@
-package io.github.mimerme.core;
+package io.github.mimerme.storefront;
 
-import java.util.Random;
-
-import io.github.mimerme.store.Category;
+import io.github.mimerme.data.Category;
 
 // Seller's perspective
 // NOTE: 'with' keyword in Dart?

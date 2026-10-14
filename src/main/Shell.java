@@ -1,4 +1,4 @@
-package io.github.mimerme;
+package main;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,12 +13,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.github.mimerme.core.Item;
-import io.github.mimerme.core.Product;
-import io.github.mimerme.core.Transaction;
-import io.github.mimerme.store.Category;
-import io.github.mimerme.store.StoreInformation;
+import io.github.mimerme.data.Category;
+import io.github.mimerme.data.StoreInformation;
+import io.github.mimerme.storefront.Item;
+import io.github.mimerme.storefront.Product;
+import io.github.mimerme.storefront.Transaction;
 import io.github.mimerme.users.User;
+import io.github.mimerme.yaros.Utils;
 
 @Configuration
 public class Shell {
@@ -139,7 +140,7 @@ public class Shell {
 					//					System.out.printf("%-15s | %-15s | $%-9d%n\n", user.id, user.username, user.email);
 				}
 			} else if (splits[0].equals("pwd") || splits[0].equals("cwd")) {
-				System.out.println(YarosUtils.cwd());
+				System.out.println(Utils.cwd());
 			} else if (splits[0].equals("login")) {
 				if (splits.length < 2 + 1) {
 					System.out.println("USAGE: login <USERNAME/EMAIL> <PASSWORD>");

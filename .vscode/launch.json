@@ -3,16 +3,23 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Run Shell",
+            "name": "Run Vanilla",
             "request": "launch",
-            "mainClass": "io.github.mimerme.Shell",
+            "mainClass": "main.Vanilla",
             "projectName": "storefront"
         },
         {
             "type": "java",
-            "name": "Run Vanilla",
+            "name": "Run Shell",
             "request": "launch",
-            "mainClass": "io.github.mimerme.Vanilla",
+            "mainClass": "main.Shell",
+            "projectName": "storefront"
+        },
+        {
+            "type": "java",
+            "name": "Run Storefront",
+            "request": "launch",
+            "mainClass": "main.Storefront",
             "projectName": "storefront"
         }
     ]

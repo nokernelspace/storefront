@@ -1,11 +1,18 @@
-package io.github.mimerme;
+package io.github.mimerme.yaros;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class YarosUtils {
+public class Utils {
+    public class Files {
+        // Read file as string with return carriage characters `\r` stripped from each line
+        public String readString() {
+            return "";
+        }
+    }
+
     public static void touch(String path) {
         Path filePath = Paths.get(path);
         // Or relative path: Paths.get("data/output/myfile.txt");

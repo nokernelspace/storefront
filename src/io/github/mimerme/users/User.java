@@ -1,9 +1,8 @@
 package io.github.mimerme.users;
 
 import java.util.Random;
-import java.util.concurrent.RunnableFuture;
 
-import io.github.mimerme.core.ShoppingCart;
+import io.github.mimerme.storefront.ShoppingCart;
 
 public class User {
 	public String id;
