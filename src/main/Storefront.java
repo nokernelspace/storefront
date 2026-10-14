@@ -121,7 +121,9 @@ public class Storefront {
             // TODO: not working
             //registerAPI(server, "api_welcome", Storefront::api_welcome);
 
+            // TODO: use spring-webmvc DispatcherServerlet somewhere here
             server.setExecutor(null); // TODO: this might be single-threaded?
+
             server.start();
         } catch (IOException e) {
             e.printStackTrace();
