@@ -3,6 +3,8 @@ Completely CLI based as of now
 
 - `sellingPrice = (buyingPrice * 0.5)+buyingPrice)`
 
+`notes/` - are notes for AI agents
+
 # WIP
 - testing transaction
 - add profit checking for admins' in `product category`
