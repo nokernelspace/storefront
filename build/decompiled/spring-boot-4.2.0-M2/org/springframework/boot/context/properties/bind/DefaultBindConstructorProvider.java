@@ -1,0 +1,177 @@
+package org.springframework.boot.context.properties.bind;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.stream.Stream;
+import org.jspecify.annotations.Nullable;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.KotlinDetector;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+
+class DefaultBindConstructorProvider implements BindConstructorProvider {
+   @Override
+   public @Nullable Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
+      DefaultBindConstructorProvider.Constructors constructors = DefaultBindConstructorProvider.Constructors.getConstructors(
+         bindable.getType().resolve(), isNestedConstructorBinding
+      );
+      return constructors.getBind() != null
+            && constructors.isDeducedBindConstructor()
+            && !constructors.isImmutableType()
+            && bindable.getValue() != null
+            && bindable.getValue().get() != null
+         ? null
+         : constructors.getBind();
+   }
+
+   @Override
+   public @Nullable Constructor<?> getBindConstructor(Class<?> type, boolean isNestedConstructorBinding) {
+      DefaultBindConstructorProvider.Constructors constructors = DefaultBindConstructorProvider.Constructors.getConstructors(type, isNestedConstructorBinding);
+      return constructors.getBind();
+   }
+
+   static final class Constructors {
+      private static final DefaultBindConstructorProvider.Constructors NONE = new DefaultBindConstructorProvider.Constructors(false, null, false, false);
+      private final boolean hasAutowired;
+      private final @Nullable Constructor<?> bind;
+      private final boolean deducedBindConstructor;
+      private final boolean immutableType;
+
+      private Constructors(boolean hasAutowired, @Nullable Constructor<?> bind, boolean deducedBindConstructor, boolean immutableType) {
+         this.hasAutowired = hasAutowired;
+         this.bind = bind;
+         this.deducedBindConstructor = deducedBindConstructor;
+         this.immutableType = immutableType;
+      }
+
+      boolean hasAutowired() {
+         return this.hasAutowired;
+      }
+
+      @Nullable Constructor<?> getBind() {
+         return this.bind;
+      }
+
+      boolean isDeducedBindConstructor() {
+         return this.deducedBindConstructor;
+      }
+
+      boolean isImmutableType() {
+         return this.immutableType;
+      }
+
+      static DefaultBindConstructorProvider.Constructors getConstructors(@Nullable Class<?> type, boolean isNestedConstructorBinding) {
+         if (type == null) {
+            return NONE;
+         }
+
+         boolean hasAutowiredConstructor = isAutowiredPresent(type);
+         Constructor<?>[] candidates = getCandidateConstructors(type);
+         MergedAnnotations[] candidateAnnotations = getAnnotations(candidates);
+         boolean deducedBindConstructor = false;
+         boolean immutableType = type.isRecord();
+         Constructor<?> bind = getConstructorBindingAnnotated(type, candidates, candidateAnnotations);
+         if (bind == null && !hasAutowiredConstructor) {
+            bind = deduceBindConstructor(type, candidates);
+            deducedBindConstructor = bind != null;
+         }
+
+         if (bind == null && !hasAutowiredConstructor && isKotlinType(type)) {
+            bind = deduceKotlinBindConstructor(type);
+            deducedBindConstructor = bind != null;
+         }
+
+         if (bind != null || isNestedConstructorBinding) {
+            Assert.state(!hasAutowiredConstructor, () -> type.getName() + " declares @ConstructorBinding and @Autowired constructor");
+         }
+
+         return new DefaultBindConstructorProvider.Constructors(hasAutowiredConstructor, bind, deducedBindConstructor, immutableType);
+      }
+
+      private static boolean isAutowiredPresent(Class<?> type) {
+         if (Stream.of(type.getDeclaredConstructors())
+            .<MergedAnnotations>map(MergedAnnotations::from)
+            .anyMatch(annotations -> annotations.isPresent(Autowired.class))) {
+            return true;
+         }
+
+         Class<?> userClass = ClassUtils.getUserClass(type);
+         return userClass != type && isAutowiredPresent(userClass);
+      }
+
+      private static Constructor<?>[] getCandidateConstructors(Class<?> type) {
+         return isInnerClass(type)
+            ? new Constructor[0]
+            : Arrays.stream(type.getDeclaredConstructors()).filter(DefaultBindConstructorProvider.Constructors::isNonSynthetic).toArray(Constructor[]::new);
+      }
+
+      private static boolean isInnerClass(Class<?> type) {
+         try {
+            return type.getDeclaredField("this$0").isSynthetic();
+         } catch (NoSuchFieldException ex) {
+            return false;
+         }
+      }
+
+      private static boolean isNonSynthetic(Constructor<?> constructor) {
+         return !constructor.isSynthetic();
+      }
+
+      private static MergedAnnotations[] getAnnotations(Constructor<?>[] candidates) {
+         MergedAnnotations[] candidateAnnotations = new MergedAnnotations[candidates.length];
+
+         for (int i = 0; i < candidates.length; i++) {
+            candidateAnnotations[i] = MergedAnnotations.from(candidates[i], SearchStrategy.SUPERCLASS);
+         }
+
+         return candidateAnnotations;
+      }
+
+      private static @Nullable Constructor<?> getConstructorBindingAnnotated(Class<?> type, Constructor<?>[] candidates, MergedAnnotations[] mergedAnnotations) {
+         Constructor<?> result = null;
+
+         for (int i = 0; i < candidates.length; i++) {
+            if (mergedAnnotations[i].isPresent(ConstructorBinding.class)) {
+               Assert.state(candidates[i].getParameterCount() > 0, () -> type.getName() + " declares @ConstructorBinding on a no-args constructor");
+               Assert.state(result == null, () -> type.getName() + " has more than one @ConstructorBinding constructor");
+               result = candidates[i];
+            }
+         }
+
+         return result;
+      }
+
+      private static @Nullable Constructor<?> deduceBindConstructor(Class<?> type, Constructor<?>[] candidates) {
+         if (candidates.length != 1 || candidates[0].getParameterCount() <= 0) {
+            Constructor<?> result = null;
+
+            for (Constructor<?> candidate : candidates) {
+               if (!Modifier.isPrivate(candidate.getModifiers())) {
+                  if (result != null) {
+                     return null;
+                  }
+
+                  result = candidate;
+               }
+            }
+
+            return result != null && result.getParameterCount() > 0 ? result : null;
+         } else {
+            return type.isMemberClass() && Modifier.isPrivate(candidates[0].getModifiers()) ? null : candidates[0];
+         }
+      }
+
+      private static boolean isKotlinType(Class<?> type) {
+         return KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type);
+      }
+
+      private static @Nullable Constructor<?> deduceKotlinBindConstructor(Class<?> type) {
+         Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
+         return primaryConstructor != null && primaryConstructor.getParameterCount() > 0 ? primaryConstructor : null;
+      }
+   }
+}

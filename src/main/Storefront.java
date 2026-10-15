@@ -117,13 +117,10 @@ public class Storefront {
             HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
             registerDynamicPage(server, "login", Storefront::login);
             registerStaticPage(server, "get_home", Storefront::get_home);
-
             // TODO: not working
             //registerAPI(server, "api_welcome", Storefront::api_welcome);
-
             // TODO: use spring-webmvc DispatcherServerlet somewhere here
             server.setExecutor(null); // TODO: this might be single-threaded?
-
             server.start();
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,0 +1,52 @@
+package org.springframework.boot.support;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
+import org.springframework.boot.EnvironmentPostProcessor;
+import org.springframework.boot.bootstrap.BootstrapContext;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
+import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.boot.util.Instantiator;
+import org.springframework.util.Assert;
+
+class ReflectionEnvironmentPostProcessorsFactory implements EnvironmentPostProcessorsFactory {
+   private final @Nullable List<Class<?>> classes;
+   private @Nullable ClassLoader classLoader;
+   private final @Nullable List<String> classNames;
+
+   ReflectionEnvironmentPostProcessorsFactory(Class<?>... classes) {
+      this.classes = new ArrayList<>(Arrays.asList(classes));
+      this.classNames = null;
+   }
+
+   ReflectionEnvironmentPostProcessorsFactory(@Nullable ClassLoader classLoader, String... classNames) {
+      this(classLoader, Arrays.asList(classNames));
+   }
+
+   ReflectionEnvironmentPostProcessorsFactory(@Nullable ClassLoader classLoader, List<String> classNames) {
+      this.classes = null;
+      this.classLoader = classLoader;
+      this.classNames = classNames;
+   }
+
+   @Override
+   public List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext) {
+      Instantiator<EnvironmentPostProcessor> instantiator = new Instantiator<>(EnvironmentPostProcessor.class, parameters -> {
+         parameters.add(DeferredLogFactory.class, logFactory);
+         parameters.add(Log.class, logFactory::getLog);
+         parameters.add(ConfigurableBootstrapContext.class, bootstrapContext);
+         parameters.add(BootstrapContext.class, bootstrapContext);
+         parameters.add(BootstrapRegistry.class, bootstrapContext);
+      });
+      if (this.classes != null) {
+         return instantiator.instantiateTypes(this.classes);
+      }
+
+      Assert.state(this.classNames != null, "'classNames' must not be null");
+      return instantiator.instantiate(this.classLoader, this.classNames);
+   }
+}

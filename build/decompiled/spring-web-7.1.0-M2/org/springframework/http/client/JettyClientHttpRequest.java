@@ -1,0 +1,90 @@
+package org.springframework.http.client;
+
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
+import java.net.URI;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import org.eclipse.jetty.client.InputStreamResponseListener;
+import org.eclipse.jetty.client.OutputStreamRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.Response;
+import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.StreamingHttpOutputMessage;
+import org.springframework.util.StreamUtils;
+
+class JettyClientHttpRequest extends AbstractStreamingClientHttpRequest {
+   private static final int CHUNK_SIZE = 1024;
+   private final Request request;
+   private final long readTimeout;
+
+   public JettyClientHttpRequest(Request request, long readTimeout) {
+      this.request = request;
+      this.readTimeout = readTimeout;
+   }
+
+   @Override
+   public HttpMethod getMethod() {
+      return HttpMethod.valueOf(this.request.getMethod());
+   }
+
+   @Override
+   public URI getURI() {
+      return this.request.getURI();
+   }
+
+   @Override
+   protected ClientHttpResponse executeInternal(HttpHeaders headers, StreamingHttpOutputMessage.@Nullable Body body) throws IOException {
+      if (!headers.isEmpty()) {
+         this.request.headers(httpFields -> headers.forEach((headerName, headerValues) -> {
+            for (String headerValue : headerValues) {
+               httpFields.add(headerName, headerValue);
+            }
+         }));
+      }
+
+      String contentType = null;
+      if (headers.getContentType() != null) {
+         contentType = headers.getContentType().toString();
+      }
+
+      try {
+         InputStreamResponseListener responseListener = new InputStreamResponseListener();
+         if (body != null) {
+            OutputStreamRequestContent requestContent = new OutputStreamRequestContent(contentType);
+            this.request.body(requestContent).send(responseListener);
+
+            try (OutputStream outputStream = new BufferedOutputStream(requestContent.getOutputStream(), 1024)) {
+               body.writeTo(StreamUtils.nonClosing(outputStream));
+            }
+         } else {
+            this.request.send(responseListener);
+         }
+
+         Response response = responseListener.get(this.readTimeout, TimeUnit.MILLISECONDS);
+         return new JettyClientHttpResponse(response, responseListener.getInputStream());
+      } catch (InterruptedException ex) {
+         Thread.currentThread().interrupt();
+         throw new IOException("Request was interrupted: " + ex.getMessage(), ex);
+      } catch (ExecutionException ex) {
+         Throwable cause = ex.getCause();
+         if (cause instanceof UncheckedIOException uioEx) {
+            throw uioEx.getCause();
+         } else if (cause instanceof RuntimeException rtEx) {
+            throw rtEx;
+         } else if (cause instanceof IOException ioEx) {
+            throw ioEx;
+         } else {
+            String message = cause == null ? null : cause.getMessage();
+            throw message == null ? new IOException(cause) : new IOException(message, cause);
+         }
+      } catch (TimeoutException ex) {
+         throw new IOException("Request timed out: " + ex.getMessage(), ex);
+      }
+   }
+}

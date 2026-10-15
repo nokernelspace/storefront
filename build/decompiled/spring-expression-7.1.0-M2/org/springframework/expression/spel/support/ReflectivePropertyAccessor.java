@@ -1,0 +1,585 @@
+package org.springframework.expression.spel.support;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import kotlin.jvm.JvmClassMappingKt;
+import kotlin.reflect.KClass;
+import kotlin.reflect.KMutableProperty;
+import kotlin.reflect.KProperty;
+import kotlin.reflect.full.KClasses;
+import kotlin.reflect.jvm.ReflectJvmMapping;
+import org.jspecify.annotations.Nullable;
+import org.springframework.asm.MethodVisitor;
+import org.springframework.core.KotlinDetector;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.convert.Property;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.expression.AccessException;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.EvaluationException;
+import org.springframework.expression.PropertyAccessor;
+import org.springframework.expression.TypedValue;
+import org.springframework.expression.spel.CodeFlow;
+import org.springframework.expression.spel.CompilablePropertyAccessor;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+
+public class ReflectivePropertyAccessor implements PropertyAccessor {
+   private static final Set<Class<?>> ANY_TYPES = Collections.emptySet();
+   private static final Set<Class<?>> BOOLEAN_TYPES = Set.of(Boolean.class, boolean.class);
+   private static final boolean KOTLIN_REFLECT_PRESENT = KotlinDetector.isKotlinReflectPresent();
+   private final boolean allowWrite;
+   private final Map<ReflectivePropertyAccessor.PropertyCacheKey, ReflectivePropertyAccessor.InvokerPair> readerCache = new ConcurrentHashMap<>(64);
+   private final Map<ReflectivePropertyAccessor.PropertyCacheKey, Member> writerCache = new ConcurrentHashMap<>(64);
+   private final Map<ReflectivePropertyAccessor.PropertyCacheKey, TypeDescriptor> typeDescriptorCache = new ConcurrentHashMap<>(64);
+   private final Map<Class<?>, Method[]> sortedMethodsCache = new ConcurrentHashMap<>(64);
+
+   public ReflectivePropertyAccessor() {
+      this(true);
+   }
+
+   public ReflectivePropertyAccessor(boolean allowWrite) {
+      this.allowWrite = allowWrite;
+   }
+
+   @Override
+   public Class<?> @Nullable [] getSpecificTargetClasses() {
+      return null;
+   }
+
+   @Override
+   public boolean canRead(EvaluationContext context, @Nullable Object target, String name) throws AccessException {
+      if (target == null) {
+         return false;
+      } else {
+         Class<?> type = target instanceof Class<?> clazz ? clazz : target.getClass();
+         if (type.isArray() && name.equals("length")) {
+            return true;
+         } else {
+            ReflectivePropertyAccessor.PropertyCacheKey cacheKey = new ReflectivePropertyAccessor.PropertyCacheKey(type, name, target instanceof Class);
+            if (this.readerCache.containsKey(cacheKey)) {
+               return true;
+            } else {
+               Method method = this.findGetterForProperty(name, type, target);
+               if (method != null) {
+                  Property property = new Property(type, method, null, name);
+                  TypeDescriptor typeDescriptor = new TypeDescriptor(property);
+                  Method methodToInvoke = ClassUtils.getPubliclyAccessibleMethodIfPossible(method, type);
+                  this.readerCache.put(cacheKey, new ReflectivePropertyAccessor.InvokerPair(methodToInvoke, typeDescriptor));
+                  this.typeDescriptorCache.put(cacheKey, typeDescriptor);
+                  return true;
+               } else {
+                  Field field = this.findField(name, type, target);
+                  if (field != null) {
+                     TypeDescriptor typeDescriptor = new TypeDescriptor(field);
+                     this.readerCache.put(cacheKey, new ReflectivePropertyAccessor.InvokerPair(field, typeDescriptor));
+                     this.typeDescriptorCache.put(cacheKey, typeDescriptor);
+                     return true;
+                  } else {
+                     return false;
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   @Override
+   public TypedValue read(EvaluationContext context, @Nullable Object target, String name) throws AccessException {
+      Assert.state(target != null, "Target must not be null");
+      Class<?> type = target instanceof Class<?> clazz ? clazz : target.getClass();
+      if (!type.isArray() || !name.equals("length")) {
+         ReflectivePropertyAccessor.PropertyCacheKey cacheKey = new ReflectivePropertyAccessor.PropertyCacheKey(type, name, target instanceof Class);
+         ReflectivePropertyAccessor.InvokerPair invoker = this.readerCache.get(cacheKey);
+         if (invoker == null || invoker.member instanceof Method) {
+            Method method = (Method)(invoker != null ? invoker.member : null);
+            Method methodToInvoke = method;
+            if (method == null) {
+               method = this.findGetterForProperty(name, type, target);
+               if (method != null) {
+                  Property property = new Property(type, method, null, name);
+                  TypeDescriptor typeDescriptor = new TypeDescriptor(property);
+                  methodToInvoke = ClassUtils.getPubliclyAccessibleMethodIfPossible(method, type);
+                  invoker = new ReflectivePropertyAccessor.InvokerPair(methodToInvoke, typeDescriptor);
+                  this.readerCache.put(cacheKey, invoker);
+               }
+            }
+
+            if (methodToInvoke != null) {
+               try {
+                  ReflectionUtils.makeAccessible(methodToInvoke);
+                  Object value = methodToInvoke.invoke(target);
+                  return new TypedValue(value, invoker.typeDescriptor.narrow(value));
+               } catch (Exception ex) {
+                  throw new AccessException("Unable to access property '" + name + "' through getter method", ex);
+               }
+            }
+         }
+
+         if (invoker == null || invoker.member instanceof Field) {
+            Field field = (Field)(invoker == null ? null : invoker.member);
+            if (field == null) {
+               field = this.findField(name, type, target);
+               if (field != null) {
+                  invoker = new ReflectivePropertyAccessor.InvokerPair(field, new TypeDescriptor(field));
+                  this.readerCache.put(cacheKey, invoker);
+               }
+            }
+
+            if (field != null) {
+               try {
+                  ReflectionUtils.makeAccessible(field);
+                  Object value = field.get(target);
+                  return new TypedValue(value, invoker.typeDescriptor.narrow(value));
+               } catch (Exception ex) {
+                  throw new AccessException("Unable to access field '" + name + "'", ex);
+               }
+            }
+         }
+
+         throw new AccessException("Neither getter method nor field found for property '" + name + "'");
+      } else if (target instanceof Class) {
+         throw new AccessException("Cannot access length on array class itself");
+      } else {
+         return new TypedValue(Array.getLength(target));
+      }
+   }
+
+   @Override
+   public boolean canWrite(EvaluationContext context, @Nullable Object target, String name) throws AccessException {
+      if (this.allowWrite && target != null) {
+         Class<?> type = target instanceof Class<?> clazz ? clazz : target.getClass();
+         ReflectivePropertyAccessor.PropertyCacheKey cacheKey = new ReflectivePropertyAccessor.PropertyCacheKey(type, name, target instanceof Class);
+         if (this.writerCache.containsKey(cacheKey)) {
+            return true;
+         } else {
+            Method method = this.findSetterForProperty(name, type, target);
+            if (method != null) {
+               Property property = new Property(type, null, method, name);
+               TypeDescriptor typeDescriptor = new TypeDescriptor(property);
+               method = ClassUtils.getPubliclyAccessibleMethodIfPossible(method, type);
+               this.writerCache.put(cacheKey, method);
+               this.typeDescriptorCache.put(cacheKey, typeDescriptor);
+               return true;
+            } else {
+               Field field = this.findField(name, type, target);
+               if (field != null) {
+                  this.writerCache.put(cacheKey, field);
+                  this.typeDescriptorCache.put(cacheKey, new TypeDescriptor(field));
+                  return true;
+               } else {
+                  return false;
+               }
+            }
+         }
+      } else {
+         return false;
+      }
+   }
+
+   @Override
+   public void write(EvaluationContext context, @Nullable Object target, String name, @Nullable Object newValue) throws AccessException {
+      if (!this.allowWrite) {
+         throw new AccessException("PropertyAccessor for property '" + name + "' on target [" + target + "] does not allow write operations");
+      }
+
+      Assert.state(target != null, "Target must not be null");
+      Class<?> type = target instanceof Class<?> clazz ? clazz : target.getClass();
+      Object possiblyConvertedNewValue = newValue;
+      TypeDescriptor typeDescriptor = this.getTypeDescriptor(context, target, name);
+      if (typeDescriptor != null) {
+         try {
+            possiblyConvertedNewValue = context.getTypeConverter().convertValue(newValue, TypeDescriptor.forObject(newValue), typeDescriptor);
+         } catch (EvaluationException evaluationException) {
+            throw new AccessException("Type conversion failure", evaluationException);
+         }
+      }
+
+      ReflectivePropertyAccessor.PropertyCacheKey cacheKey = new ReflectivePropertyAccessor.PropertyCacheKey(type, name, target instanceof Class);
+      Member cachedMember = this.writerCache.get(cacheKey);
+      if (cachedMember == null || cachedMember instanceof Method) {
+         Method method = (Method)cachedMember;
+         if (method == null) {
+            method = this.findSetterForProperty(name, type, target);
+            if (method != null) {
+               method = ClassUtils.getPubliclyAccessibleMethodIfPossible(method, type);
+               cachedMember = method;
+               this.writerCache.put(cacheKey, cachedMember);
+            }
+         }
+
+         if (method != null) {
+            try {
+               ReflectionUtils.makeAccessible(method);
+               method.invoke(target, possiblyConvertedNewValue);
+               return;
+            } catch (Exception ex) {
+               throw new AccessException("Unable to access property '" + name + "' through setter method", ex);
+            }
+         }
+      }
+
+      if (cachedMember == null || cachedMember instanceof Field) {
+         Field field = (Field)cachedMember;
+         if (field == null) {
+            field = this.findField(name, type, target);
+            if (field != null) {
+               Member var16 = field;
+               this.writerCache.put(cacheKey, var16);
+            }
+         }
+
+         if (field != null) {
+            try {
+               ReflectionUtils.makeAccessible(field);
+               field.set(target, possiblyConvertedNewValue);
+               return;
+            } catch (Exception ex) {
+               throw new AccessException("Unable to access field '" + name + "'", ex);
+            }
+         }
+      }
+
+      throw new AccessException("Neither setter method nor field found for property '" + name + "'");
+   }
+
+   private @Nullable TypeDescriptor getTypeDescriptor(EvaluationContext context, Object target, String name) {
+      Class<?> type = target instanceof Class<?> clazz ? clazz : target.getClass();
+      if (type.isArray() && name.equals("length")) {
+         return TypeDescriptor.valueOf(int.class);
+      }
+
+      ReflectivePropertyAccessor.PropertyCacheKey cacheKey = new ReflectivePropertyAccessor.PropertyCacheKey(type, name, target instanceof Class);
+      TypeDescriptor typeDescriptor = this.typeDescriptorCache.get(cacheKey);
+      if (typeDescriptor == null) {
+         try {
+            if (this.canRead(context, target, name) || this.canWrite(context, target, name)) {
+               typeDescriptor = this.typeDescriptorCache.get(cacheKey);
+            }
+         } catch (AccessException var8) {
+         }
+      }
+
+      return typeDescriptor;
+   }
+
+   private @Nullable Method findGetterForProperty(String propertyName, Class<?> clazz, Object target) {
+      boolean targetIsAClass = target instanceof Class;
+      Method method = this.findGetterForProperty(propertyName, clazz, targetIsAClass);
+      if (method == null && targetIsAClass) {
+         method = this.findGetterForProperty(propertyName, Class.class, false);
+      }
+
+      return method;
+   }
+
+   private @Nullable Method findSetterForProperty(String propertyName, Class<?> clazz, Object target) {
+      return this.findSetterForProperty(propertyName, clazz, target instanceof Class);
+   }
+
+   protected @Nullable Method findGetterForProperty(String propertyName, Class<?> clazz, boolean mustBeStatic) {
+      String[] methodSuffixes = this.getPropertyMethodSuffixes(propertyName);
+      Method method = this.findMethodForProperty(methodSuffixes, "get", clazz, mustBeStatic, 0, ANY_TYPES);
+      if (method == null) {
+         method = this.findMethodForProperty(methodSuffixes, "is", clazz, mustBeStatic, 0, BOOLEAN_TYPES);
+         if (method == null) {
+            method = this.findMethodForProperty(new String[]{propertyName}, "", clazz, mustBeStatic, 0, ANY_TYPES);
+         }
+      }
+
+      if (method != null && method.getReturnType() == void.class) {
+         method = null;
+      }
+
+      return method;
+   }
+
+   protected @Nullable Method findSetterForProperty(String propertyName, Class<?> clazz, boolean mustBeStatic) {
+      return this.findMethodForProperty(this.getPropertyMethodSuffixes(propertyName), "set", clazz, mustBeStatic, 1, ANY_TYPES);
+   }
+
+   private @Nullable Method findMethodForProperty(
+      String[] methodSuffixes, String prefix, Class<?> clazz, boolean mustBeStatic, int numberOfParams, Set<Class<?>> requiredReturnTypes
+   ) {
+      Method[] methods = this.getSortedMethods(clazz);
+
+      for (String methodSuffix : methodSuffixes) {
+         for (Method method : methods) {
+            if (this.isCandidateForProperty(method, clazz)
+               && (method.getName().equals(prefix + methodSuffix) || isKotlinProperty(method, methodSuffix))
+               && method.getParameterCount() == numberOfParams
+               && (!mustBeStatic || Modifier.isStatic(method.getModifiers()))
+               && (requiredReturnTypes.isEmpty() || requiredReturnTypes.contains(method.getReturnType()))) {
+               return method;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   private Method[] getSortedMethods(Class<?> clazz) {
+      return this.sortedMethodsCache.computeIfAbsent(clazz, key -> {
+         Method[] methods = key.getMethods();
+         Arrays.sort(methods, (o1, o2) -> o1.isBridge() == o2.isBridge() ? 0 : (o1.isBridge() ? 1 : -1));
+         return methods;
+      });
+   }
+
+   protected boolean isCandidateForProperty(Method method, Class<?> targetClass) {
+      return true;
+   }
+
+   protected String[] getPropertyMethodSuffixes(String propertyName) {
+      String suffix = this.getPropertyMethodSuffix(propertyName);
+      return suffix.length() > 0 && Character.isUpperCase(suffix.charAt(0)) ? new String[]{suffix} : new String[]{suffix, StringUtils.capitalize(suffix)};
+   }
+
+   protected String getPropertyMethodSuffix(String propertyName) {
+      return propertyName.length() > 1 && Character.isUpperCase(propertyName.charAt(1)) ? propertyName : StringUtils.capitalize(propertyName);
+   }
+
+   private @Nullable Field findField(String name, Class<?> clazz, Object target) {
+      Field field = this.findField(name, clazz, target instanceof Class);
+      if (field == null && target instanceof Class) {
+         field = this.findField(name, target.getClass(), false);
+      }
+
+      return field;
+   }
+
+   protected @Nullable Field findField(String name, Class<?> clazz, boolean mustBeStatic) {
+      Field[] fields = clazz.getFields();
+
+      for (Field field : fields) {
+         if (field.getName().equals(name) && (!mustBeStatic || Modifier.isStatic(field.getModifiers()))) {
+            return field;
+         }
+      }
+
+      if (clazz.getSuperclass() != null) {
+         Field field = this.findField(name, clazz.getSuperclass(), mustBeStatic);
+         if (field != null) {
+            return field;
+         }
+      }
+
+      for (Class<?> implementedInterface : clazz.getInterfaces()) {
+         Field field = this.findField(name, implementedInterface, mustBeStatic);
+         if (field != null) {
+            return field;
+         }
+      }
+
+      return null;
+   }
+
+   public PropertyAccessor createOptimalAccessor(EvaluationContext context, @Nullable Object target, String name) {
+      if (target == null) {
+         return this;
+      }
+
+      Class<?> type = target instanceof Class<?> clazz ? clazz : target.getClass();
+      if (type.isArray()) {
+         return this;
+      }
+
+      ReflectivePropertyAccessor.PropertyCacheKey cacheKey = new ReflectivePropertyAccessor.PropertyCacheKey(type, name, target instanceof Class);
+      ReflectivePropertyAccessor.InvokerPair invokerPair = this.readerCache.get(cacheKey);
+      if (invokerPair == null || invokerPair.member instanceof Method) {
+         Method method = (Method)(invokerPair != null ? invokerPair.member : null);
+         if (method == null) {
+            method = this.findGetterForProperty(name, type, target);
+            if (method != null) {
+               TypeDescriptor typeDescriptor = new TypeDescriptor(new MethodParameter(method, -1));
+               Method methodToInvoke = ClassUtils.getPubliclyAccessibleMethodIfPossible(method, type);
+               ReflectionUtils.makeAccessible(methodToInvoke);
+               invokerPair = new ReflectivePropertyAccessor.InvokerPair(methodToInvoke, typeDescriptor);
+               this.readerCache.put(cacheKey, invokerPair);
+            }
+         }
+
+         if (method != null) {
+            return new ReflectivePropertyAccessor.OptimalPropertyAccessor(invokerPair);
+         }
+      }
+
+      if (invokerPair == null || invokerPair.member instanceof Field) {
+         Field field = invokerPair != null ? (Field)invokerPair.member : null;
+         if (field == null) {
+            field = this.findField(name, type, target instanceof Class);
+            if (field != null) {
+               ReflectionUtils.makeAccessible(field);
+               invokerPair = new ReflectivePropertyAccessor.InvokerPair(field, new TypeDescriptor(field));
+               this.readerCache.put(cacheKey, invokerPair);
+            }
+         }
+
+         if (field != null) {
+            return new ReflectivePropertyAccessor.OptimalPropertyAccessor(invokerPair);
+         }
+      }
+
+      return this;
+   }
+
+   private static boolean isKotlinProperty(Method method, String methodSuffix) {
+      Class<?> clazz = method.getDeclaringClass();
+      return KOTLIN_REFLECT_PRESENT && KotlinDetector.isKotlinType(clazz) && ReflectivePropertyAccessor.KotlinDelegate.isKotlinProperty(method, methodSuffix);
+   }
+
+   private record InvokerPair(Member member, TypeDescriptor typeDescriptor) {
+   }
+
+   private static class KotlinDelegate {
+      public static boolean isKotlinProperty(Method method, String methodSuffix) {
+         KClass<?> kClass = JvmClassMappingKt.getKotlinClass(method.getDeclaringClass());
+
+         for (KProperty<?> property : KClasses.getMemberProperties(kClass)) {
+            if (methodSuffix.equalsIgnoreCase(property.getName())
+               && (
+                  method.equals(ReflectJvmMapping.getJavaGetter(property))
+                     || property instanceof KMutableProperty<?> mutableProperty && method.equals(ReflectJvmMapping.getJavaSetter(mutableProperty))
+               )) {
+               return true;
+            }
+         }
+
+         return false;
+      }
+   }
+
+   private static class OptimalPropertyAccessor implements CompilablePropertyAccessor {
+      private final Member member;
+      private final TypeDescriptor typeDescriptor;
+
+      OptimalPropertyAccessor(ReflectivePropertyAccessor.InvokerPair invokerPair) {
+         this.member = invokerPair.member;
+         this.typeDescriptor = invokerPair.typeDescriptor;
+      }
+
+      @Override
+      public Class<?> @Nullable [] getSpecificTargetClasses() {
+         throw new UnsupportedOperationException("Should not be called on an OptimalPropertyAccessor");
+      }
+
+      @Override
+      public boolean canRead(EvaluationContext context, @Nullable Object target, String name) throws AccessException {
+         if (target == null) {
+            return false;
+         }
+
+         Class<?> type = target instanceof Class<?> clazz ? clazz : target.getClass();
+         if (type.isArray()) {
+            return false;
+         }
+
+         if (this.member instanceof Method method) {
+            String capitalizedName = StringUtils.capitalize(name);
+            String getterName = "get" + capitalizedName;
+            if (getterName.equals(method.getName())) {
+               return true;
+            }
+
+            getterName = "is" + capitalizedName;
+            if (getterName.equals(method.getName())) {
+               return true;
+            }
+         }
+
+         return this.member.getName().equals(name);
+      }
+
+      @Override
+      public TypedValue read(EvaluationContext context, @Nullable Object target, String name) throws AccessException {
+         if (this.member instanceof Method method) {
+            try {
+               ReflectionUtils.makeAccessible(method);
+               Object value = method.invoke(target);
+               return new TypedValue(value, this.typeDescriptor.narrow(value));
+            } catch (Exception ex) {
+               throw new AccessException("Unable to access property '" + name + "' through getter method", ex);
+            }
+         } else {
+            Field field = (Field)this.member;
+
+            try {
+               ReflectionUtils.makeAccessible(field);
+               Object value = field.get(target);
+               return new TypedValue(value, this.typeDescriptor.narrow(value));
+            } catch (Exception ex) {
+               throw new AccessException("Unable to access field '" + name + "'", ex);
+            }
+         }
+      }
+
+      @Override
+      public boolean canWrite(EvaluationContext context, @Nullable Object target, String name) {
+         throw new UnsupportedOperationException("Should not be called on an OptimalPropertyAccessor");
+      }
+
+      @Override
+      public void write(EvaluationContext context, @Nullable Object target, String name, @Nullable Object newValue) {
+         throw new UnsupportedOperationException("Should not be called on an OptimalPropertyAccessor");
+      }
+
+      @Override
+      public boolean isCompilable() {
+         return Modifier.isPublic(this.member.getModifiers()) && Modifier.isPublic(this.member.getDeclaringClass().getModifiers());
+      }
+
+      @Override
+      public Class<?> getPropertyType() {
+         return this.member instanceof Method method ? method.getReturnType() : ((Field)this.member).getType();
+      }
+
+      @Override
+      public void generateCode(String propertyName, MethodVisitor mv, CodeFlow cf) {
+         Class<?> publicDeclaringClass = this.member.getDeclaringClass();
+         Assert.state(Modifier.isPublic(publicDeclaringClass.getModifiers()), () -> "Failed to find public declaring class for: " + this.member);
+         String classDesc = publicDeclaringClass.getName().replace('.', '/');
+         boolean isStatic = Modifier.isStatic(this.member.getModifiers());
+         String descriptor = cf.lastDescriptor();
+         if (!isStatic) {
+            if (descriptor == null) {
+               cf.loadTarget(mv);
+            }
+
+            if (descriptor == null || !classDesc.equals(descriptor.substring(1))) {
+               mv.visitTypeInsn(192, classDesc);
+            }
+         } else if (descriptor != null) {
+            mv.visitInsn(87);
+         }
+
+         if (this.member instanceof Method method) {
+            boolean isInterface = publicDeclaringClass.isInterface();
+            int opcode = isStatic ? 184 : (isInterface ? 185 : 182);
+            mv.visitMethodInsn(opcode, classDesc, method.getName(), CodeFlow.createSignatureDescriptor(method), isInterface);
+         } else {
+            mv.visitFieldInsn(isStatic ? 178 : 180, classDesc, this.member.getName(), CodeFlow.toJvmDescriptor(((Field)this.member).getType()));
+         }
+      }
+   }
+
+   private record PropertyCacheKey(Class<?> clazz, String property, boolean targetIsClass) implements Comparable<ReflectivePropertyAccessor.PropertyCacheKey> {
+      public int compareTo(ReflectivePropertyAccessor.PropertyCacheKey other) {
+         int result = this.clazz.getName().compareTo(other.clazz.getName());
+         if (result == 0) {
+            result = this.property.compareTo(other.property);
+         }
+
+         return result;
+      }
+   }
+}

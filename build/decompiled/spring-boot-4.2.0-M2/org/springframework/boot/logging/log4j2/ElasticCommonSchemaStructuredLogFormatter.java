@@ -1,0 +1,78 @@
+package org.springframework.boot.logging.log4j2;
+
+import java.util.Set;
+import java.util.TreeSet;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.time.Instant;
+import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.util.ReadOnlyStringMap;
+import org.jspecify.annotations.Nullable;
+import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.logging.StackTracePrinter;
+import org.springframework.boot.logging.structured.ContextPairs;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
+import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
+import org.springframework.core.env.Environment;
+import org.springframework.util.ObjectUtils;
+
+class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
+   ElasticCommonSchemaStructuredLogFormatter(
+      Environment environment,
+      @Nullable StackTracePrinter stackTracePrinter,
+      ContextPairs contextPairs,
+      StructuredLoggingJsonMembersCustomizer.Builder<?> customizerBuilder
+   ) {
+      super(members -> jsonMembers(environment, stackTracePrinter, contextPairs, members), customizerBuilder.nested().build());
+   }
+
+   private static void jsonMembers(
+      Environment environment, @Nullable StackTracePrinter stackTracePrinter, ContextPairs contextPairs, JsonWriter.Members<LogEvent> members
+   ) {
+      Extractor extractor = new Extractor(stackTracePrinter);
+      members.<Instant>add("@timestamp", LogEvent::getInstant).as(ElasticCommonSchemaStructuredLogFormatter::asTimestamp);
+      members.add("log").usingMembers(log -> {
+         log.add("level", LogEvent::getLevel).as(Level::name);
+         log.add("logger", LogEvent::getLoggerName);
+      });
+      members.add("process").usingMembers(process -> {
+         process.add("pid", (Long)environment.getProperty("spring.application.pid", Long.class)).whenNotNull();
+         process.add("thread").usingMembers(thread -> thread.add("name", LogEvent::getThreadName));
+      });
+      ElasticCommonSchemaProperties.get(environment).jsonMembers(members);
+      members.<Message>add("message", LogEvent::getMessage).as(StructuredMessage::get);
+      members.from(LogEvent::getContextData).usingPairs(contextPairs.nested(ElasticCommonSchemaStructuredLogFormatter::addContextDataPairs));
+      members.from(LogEvent::getThrown).whenNotNull().usingMembers(thrownMembers -> thrownMembers.add("error").usingMembers(error -> {
+         error.add("type", ObjectUtils::nullSafeClassName);
+         error.add("message", Throwable::getMessage);
+         error.add("stack_trace", extractor::stackTrace);
+      }));
+      members.<Marker>add("tags", LogEvent::getMarker).whenNotNull().as(ElasticCommonSchemaStructuredLogFormatter::getMarkers).whenNotEmpty();
+      members.add("ecs").usingMembers(ecs -> ecs.add("version", "8.11"));
+   }
+
+   private static void addContextDataPairs(ContextPairs.Pairs<ReadOnlyStringMap> contextPairs) {
+      contextPairs.add((contextData, pairs) -> contextData.forEach(pairs::accept));
+   }
+
+   private static java.time.Instant asTimestamp(Instant instant) {
+      return java.time.Instant.ofEpochMilli(instant.getEpochMillisecond()).plusNanos(instant.getNanoOfMillisecond());
+   }
+
+   private static Set<String> getMarkers(Marker marker) {
+      Set<String> result = new TreeSet<>();
+      addMarkers(result, marker);
+      return result;
+   }
+
+   private static void addMarkers(Set<String> result, Marker marker) {
+      result.add(marker.getName());
+      if (marker.hasParents()) {
+         for (Marker parent : marker.getParents()) {
+            addMarkers(result, parent);
+         }
+      }
+   }
+}

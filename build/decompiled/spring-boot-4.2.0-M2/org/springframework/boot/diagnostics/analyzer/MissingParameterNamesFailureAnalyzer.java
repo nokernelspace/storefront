@@ -1,0 +1,87 @@
+package org.springframework.boot.diagnostics.analyzer;
+
+import java.util.HashSet;
+import java.util.Set;
+import org.jspecify.annotations.Nullable;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.diagnostics.FailureAnalyzer;
+import org.springframework.core.annotation.Order;
+import org.springframework.util.StringUtils;
+
+@Order(Integer.MAX_VALUE)
+class MissingParameterNamesFailureAnalyzer implements FailureAnalyzer {
+   private static final String USE_PARAMETERS_MESSAGE = "Ensure that the compiler uses the '-parameters' flag";
+   static final String POSSIBILITY = "This may be due to missing parameter name information";
+   static final String ACTION = "Ensure that your compiler is configured to use the '-parameters' flag.\nYou may need to update both your build tool settings as well as your IDE.\n(See https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes#parameter-name-retention)\n";
+
+   @Override
+   public @Nullable FailureAnalysis analyze(Throwable failure) {
+      return analyzeForMissingParameters(failure);
+   }
+
+   static @Nullable FailureAnalysis analyzeForMissingParameters(Throwable failure) {
+      return analyzeForMissingParameters(failure, failure, new HashSet<>());
+   }
+
+   private static @Nullable FailureAnalysis analyzeForMissingParameters(Throwable rootFailure, @Nullable Throwable cause, Set<Throwable> seen) {
+      if (cause != null && seen.add(cause)) {
+         if (isSpringParametersException(cause)) {
+            return getAnalysis(rootFailure, cause);
+         }
+
+         FailureAnalysis analysis = analyzeForMissingParameters(rootFailure, cause.getCause(), seen);
+         if (analysis != null) {
+            return analysis;
+         }
+
+         for (Throwable suppressed : cause.getSuppressed()) {
+            analysis = analyzeForMissingParameters(rootFailure, suppressed, seen);
+            if (analysis != null) {
+               return analysis;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   private static boolean isSpringParametersException(Throwable failure) {
+      String message = failure.getMessage();
+      return message != null && message.contains("Ensure that the compiler uses the '-parameters' flag") && isSpringException(failure);
+   }
+
+   private static boolean isSpringException(Throwable failure) {
+      StackTraceElement[] elements = failure.getStackTrace();
+      return elements.length > 0 && isSpringClass(elements[0].getClassName());
+   }
+
+   private static boolean isSpringClass(@Nullable String className) {
+      return className != null && className.startsWith("org.springframework.");
+   }
+
+   private static FailureAnalysis getAnalysis(Throwable rootFailure, Throwable cause) {
+      StringBuilder description = new StringBuilder(String.format("%s:%n", cause.getMessage()));
+      if (rootFailure != cause) {
+         description.append(String.format("%n    Resulting Failure: %s", getExceptionTypeAndMessage(rootFailure)));
+      }
+
+      return new FailureAnalysis(
+         description.toString(),
+         "Ensure that your compiler is configured to use the '-parameters' flag.\nYou may need to update both your build tool settings as well as your IDE.\n(See https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes#parameter-name-retention)\n",
+         rootFailure
+      );
+   }
+
+   private static String getExceptionTypeAndMessage(Throwable ex) {
+      String message = ex.getMessage();
+      return ex.getClass().getName() + (StringUtils.hasText(message) ? ": " + message : "");
+   }
+
+   static void appendPossibility(StringBuilder description) {
+      if (!description.toString().endsWith(System.lineSeparator())) {
+         description.append("%n".formatted());
+      }
+
+      description.append("%n%s".formatted("This may be due to missing parameter name information"));
+   }
+}

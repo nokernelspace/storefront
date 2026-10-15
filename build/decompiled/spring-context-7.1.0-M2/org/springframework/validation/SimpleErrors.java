@@ -1,0 +1,130 @@
+package org.springframework.validation;
+
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import org.jspecify.annotations.Nullable;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+
+public class SimpleErrors implements Errors, Serializable {
+   private final Object target;
+   private final String objectName;
+   private final List<ObjectError> globalErrors = new ArrayList<>();
+   private final List<FieldError> fieldErrors = new ArrayList<>();
+
+   public SimpleErrors(Object target) {
+      Assert.notNull(target, "Target must not be null");
+      this.target = target;
+      this.objectName = this.target.getClass().getSimpleName();
+   }
+
+   public SimpleErrors(Object target, String objectName) {
+      Assert.notNull(target, "Target must not be null");
+      this.target = target;
+      this.objectName = objectName;
+   }
+
+   @Override
+   public String getObjectName() {
+      return this.objectName;
+   }
+
+   @Override
+   public void reject(String errorCode, Object @Nullable [] errorArgs, @Nullable String defaultMessage) {
+      this.globalErrors.add(new ObjectError(this.getObjectName(), new String[]{errorCode}, errorArgs, defaultMessage));
+   }
+
+   @Override
+   public void rejectValue(@Nullable String field, String errorCode, Object @Nullable [] errorArgs, @Nullable String defaultMessage) {
+      if (!StringUtils.hasLength(field)) {
+         this.reject(errorCode, errorArgs, defaultMessage);
+      } else {
+         Object newVal = this.getFieldValue(field);
+         this.fieldErrors.add(new FieldError(this.getObjectName(), field, newVal, false, new String[]{errorCode}, errorArgs, defaultMessage));
+      }
+   }
+
+   @Override
+   public void addAllErrors(Errors errors) {
+      this.globalErrors.addAll(errors.getGlobalErrors());
+      this.fieldErrors.addAll(errors.getFieldErrors());
+   }
+
+   @Override
+   public List<ObjectError> getGlobalErrors() {
+      return this.globalErrors;
+   }
+
+   @Override
+   public List<FieldError> getFieldErrors() {
+      return this.fieldErrors;
+   }
+
+   @Override
+   public @Nullable Object getFieldValue(String field) {
+      FieldError fieldError = this.getFieldError(field);
+      if (fieldError != null) {
+         return fieldError.getRejectedValue();
+      } else {
+         PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(this.target.getClass(), field);
+         if (pd != null && pd.getReadMethod() != null) {
+            ReflectionUtils.makeAccessible(pd.getReadMethod());
+            return ReflectionUtils.invokeMethod(pd.getReadMethod(), this.target);
+         } else {
+            Field rawField = ReflectionUtils.findField(this.target.getClass(), field);
+            if (rawField != null) {
+               ReflectionUtils.makeAccessible(rawField);
+               return ReflectionUtils.getField(rawField, this.target);
+            } else {
+               throw new IllegalArgumentException("Cannot retrieve value for field '" + field + "' - neither a getter method nor a raw field found");
+            }
+         }
+      }
+   }
+
+   @Override
+   public @Nullable Class<?> getFieldType(String field) {
+      PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(this.target.getClass(), field);
+      if (pd != null) {
+         return pd.getPropertyType();
+      }
+
+      Field rawField = ReflectionUtils.findField(this.target.getClass(), field);
+      return rawField != null ? rawField.getType() : null;
+   }
+
+   @Override
+   public boolean equals(@Nullable Object other) {
+      return this == other
+         || other instanceof SimpleErrors that
+            && ObjectUtils.nullSafeEquals(this.target, that.target)
+            && this.globalErrors.equals(that.globalErrors)
+            && this.fieldErrors.equals(that.fieldErrors);
+   }
+
+   @Override
+   public int hashCode() {
+      return this.target.hashCode();
+   }
+
+   @Override
+   public String toString() {
+      StringBuilder sb = new StringBuilder();
+
+      for (ObjectError error : this.globalErrors) {
+         sb.append('\n').append(error);
+      }
+
+      for (ObjectError error : this.fieldErrors) {
+         sb.append('\n').append(error);
+      }
+
+      return sb.toString();
+   }
+}

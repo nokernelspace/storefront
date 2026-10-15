@@ -1,0 +1,64 @@
+package org.springframework.boot.context.properties;
+
+import java.lang.reflect.Constructor;
+import org.jspecify.annotations.Nullable;
+import org.springframework.beans.factory.InjectionPoint;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.diagnostics.analyzer.AbstractInjectionFailureAnalyzer;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.lang.Contract;
+
+class NotConstructorBoundInjectionFailureAnalyzer extends AbstractInjectionFailureAnalyzer<NoSuchBeanDefinitionException> implements Ordered {
+   public int getOrder() {
+      return 0;
+   }
+
+   protected @Nullable FailureAnalysis analyze(Throwable rootFailure, NoSuchBeanDefinitionException cause, @Nullable String description) {
+      InjectionPoint injectionPoint = this.findInjectionPoint(rootFailure);
+      if (this.isConstructorBindingConfigurationProperties(injectionPoint)) {
+         String simpleName = injectionPoint.getMember().getDeclaringClass().getSimpleName();
+         String action = "Update your configuration so that "
+            + simpleName
+            + " is defined via @"
+            + ConfigurationPropertiesScan.class.getSimpleName()
+            + " or @"
+            + EnableConfigurationProperties.class.getSimpleName()
+            + ".";
+         return new FailureAnalysis(
+            simpleName
+               + " is annotated with @"
+               + ConstructorBinding.class.getSimpleName()
+               + " but it is defined as a regular bean which caused dependency injection to fail.",
+            action,
+            cause
+         );
+      } else {
+         return null;
+      }
+   }
+
+   @Contract("null -> false")
+   private boolean isConstructorBindingConfigurationProperties(@Nullable InjectionPoint injectionPoint) {
+      return injectionPoint != null
+         && injectionPoint.getMember() instanceof Constructor<?> constructor
+         && this.isConstructorBindingConfigurationProperties(constructor);
+   }
+
+   private boolean isConstructorBindingConfigurationProperties(Constructor<?> constructor) {
+      Class<?> declaringClass = constructor.getDeclaringClass();
+      BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(declaringClass);
+      return MergedAnnotations.from(declaringClass, SearchStrategy.TYPE_HIERARCHY).isPresent(ConfigurationProperties.class)
+         && bindMethod == BindMethod.VALUE_OBJECT;
+   }
+
+   private @Nullable InjectionPoint findInjectionPoint(Throwable failure) {
+      UnsatisfiedDependencyException unsatisfiedDependencyException = this.findCause(failure, UnsatisfiedDependencyException.class);
+      return unsatisfiedDependencyException == null ? null : unsatisfiedDependencyException.getInjectionPoint();
+   }
+}
