@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: spring-expression
-Implementation-Version: 7.1.0-M2
-Automatic-Module-Name: spring.expression
-Build-Jdk-Spec: 25
-
