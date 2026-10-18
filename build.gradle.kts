@@ -11,6 +11,7 @@ plugins {
     `java-library`
     `maven-publish`
     `build-init`
+    application
 }
 
 group = "storefront"
@@ -61,6 +62,27 @@ dependencies {
 //         }
 //     }
 // }
+
+tasks.register("setupExample") {
+    // TODO
+}
+
+
+tasks.register<JavaExec>("runAdminShell") {
+    group = "application"
+    description = "Runs the admin shell"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("main.Shell")
+}
+
+tasks.register<JavaExec>("runWebServer") {
+    group = "application"
+    description = "Runs the web server"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("main.Storefront")
+}
+
+
 
 tasks.register<Exec>("convertMavenProject") {
     val workDir = layout.buildDirectory.dir("pom-convert").get().asFile

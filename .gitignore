@@ -3,3 +3,4 @@ scripts/.venv
 build/
 notes/
 hosting/
+.gradle/
