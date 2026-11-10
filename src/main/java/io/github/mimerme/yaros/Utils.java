@@ -1,12 +1,11 @@
 package io.github.mimerme.yaros;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Utils {
-    public class Files {
+    public static class Files {
         // Read file as string with return carriage characters `\r` stripped from each line
         public String readString() {
             return "";
@@ -20,14 +19,14 @@ public class Utils {
         try {
             // Step 1: Create parent directories if they don't exist
             Path parentDir = filePath.getParent();
-            if (parentDir != null && !Files.exists(parentDir)) {
-                Files.createDirectories(parentDir);
+            if (parentDir != null && !java.nio.file.Files.exists(parentDir)) {
+                java.nio.file.Files.createDirectories(parentDir);
                 System.out.println("Directories created successfully.");
             }
 
             // Step 2: Create the file if it doesn't exist
-            if (!Files.exists(filePath)) {
-                Files.createFile(filePath);
+            if (!java.nio.file.Files.exists(filePath)) {
+                java.nio.file.Files.createFile(filePath);
                 System.out.println("File created successfully: " + filePath);
             } else {
                 // System.out.println("File already exists.");

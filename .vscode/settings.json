@@ -1,7 +1,11 @@
 {
-    "java.project.sourcePaths": [
-        "src"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "maven.excludedFolders": [
+        "**/build/**",
+        "**/target/**",
+        "**/.git/**"
     ],
-    "java.project.outputPath": "target/classes",
-    "java.project.referencedLibraries": []
+    "files.exclude": {
+        "**/build": true
+    }
 }

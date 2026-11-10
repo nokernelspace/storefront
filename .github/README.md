@@ -1,5 +1,9 @@
 # Storefront
-Completely CLI based as of now
+
+# Development Environment
+1. `mvn install`
+1. `mvn 
+
 
 - `sellingPrice = (buyingPrice * 0.5)+buyingPrice)`
 

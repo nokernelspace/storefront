@@ -1,5 +1,3 @@
-package main;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -11,9 +9,9 @@ import java.nio.file.Path;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,21 +22,23 @@ import io.github.mimerme.core.RouteHandler;
 import io.github.mimerme.yaros.Utils;
 
 @RestController
-@Configuration
+//@Configuration
+@RequestMapping("/")
 public class Storefront {
     private static final System.Logger log = System.getLogger(Storefront.class.getName());
     private static final Storefront INSTANCE = new Storefront();
-
+ 
     @GetMapping(path = "/", consumes = "text/html")
     public static String get_home()  {
         try {
             String response = Files.readString(Path.of(Utils.cwd() + "/templates/index.html"));
-            return response;
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+            return response; 
+        }
+        catch (IOException e) {
             e.printStackTrace();
-            return "<p>Error</p>";
-        } 
+        }
+
+        return "fart";
     }
 
     @PostMapping(path = "/", consumes = "application/json")
@@ -103,6 +103,11 @@ public class Storefront {
             } 
         });
     }
+
+    @GetMapping("/hello/{name}") 
+    public String hello(@PathVariable String name) { 
+        return "Hello " + name; 
+    } 
 
  	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(Storefront.class);
